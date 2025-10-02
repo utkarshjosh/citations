@@ -263,6 +263,7 @@ export const SwipeFeed = ({
                 height: '100%',
                 maxWidth: '600px',
                 margin: '0 auto',
+                overflow: 'hidden', // Ensure content stays within bounds
               }}
             >
               <SwipeableCard

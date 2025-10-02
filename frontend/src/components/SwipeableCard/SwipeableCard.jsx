@@ -167,8 +167,9 @@ export const SwipeableCard = ({
             position: 'relative',
             zIndex: 1,
             height: '100%',
-            overflow: 'auto',
+            overflow: 'hidden', // Prevent content from overflowing
             color: '#94A3B8', // Secondary Accent color
+            paddingBottom: '80px', // Reserve space for action buttons
           }}
         >
           {/* Top metadata line - Type | Date | Source */}
@@ -334,7 +335,12 @@ export const SwipeableCard = ({
                 fontSize: '12px',
                 marginTop: 'auto',
                 paddingTop: '8px',
+                paddingBottom: '8px', // Add bottom padding to ensure visibility
                 borderTop: '1px solid rgba(148, 163, 184, 0.1)',
+                maxHeight: '40px', // Limit height to prevent overflow
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
               }}
             >
               {Array.isArray(authors)
@@ -360,6 +366,8 @@ export const SwipeableCard = ({
             flexDirection: 'column',
             gap: '12px',
             zIndex: 2,
+            maxHeight: '60px', // Ensure buttons stay within card
+            overflow: 'hidden',
           }}
         >
           {/* Like button */}

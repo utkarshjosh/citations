@@ -3,12 +3,18 @@ Agentic paper fetcher using MCP paper-search-mcp server
 This replaces the direct arxiv_client.py with an agentic approach
 """
 import os
+import sys
 import logging
 import json
 from datetime import datetime
 from typing import List, Dict, Optional
 from pathlib import Path
 import google.generativeai as genai
+
+# Add the paper-search-mcp submodule to Python path
+submodule_path = Path(__file__).parent.parent / "backend" / "backend" / "paper-search-mcp"
+if str(submodule_path) not in sys.path:
+    sys.path.insert(0, str(submodule_path))
 
 from config import (
     CS_CATEGORIES,
