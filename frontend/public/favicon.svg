@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <!-- 
+    Favicon (16x16) - Updated for better contrast and clarity.
+    Uses both citation lines and a square background for definition.
+    Background: #1C212B (Secondary Base - dark card color)
+    Lines: White (for maximum contrast in favicon)
+    Insight Node: #00D0FF (Primary Accent)
+  -->
+
+  <!-- Background square for contrast and definition -->
+  <rect width="16" height="16" fill="#1C212B" rx="3"/>
+
+  <!-- Lines representing the stacked citations/sources (using white for clarity) -->
+  <line x1="4" y1="10" x2="12" y2="10" stroke="#FFFFFF" stroke-width="1" stroke-linecap="round"/>
+  <line x1="5" y1="11.5" x2="11" y2="11.5" stroke="#FFFFFF" stroke-width="1" stroke-linecap="round"/>
+
+  <!-- The insight node (Primary Accent: #00D0FF) -->
+  <circle cx="8" cy="7" r="1.5" fill="#00D0FF"/>
+
+</svg>

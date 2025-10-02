@@ -1,0 +1,209 @@
+/* Citations - "The Edge of Insight" Theme System */
+/* Dark mode optimized for focused, intellectual reading */
+
+:root {
+  /* Color Variables - Primary Palette */
+  --color-primary-base: #0e1117; /* Deep, near-black background */
+  --color-secondary-base: #1c212b; /* Slightly lighter for cards */
+  --color-primary-accent: #00d0ff; /* Electric blue/cyan for highlights */
+  --color-secondary-accent: #94a3b8; /* Cool gray/blue for body text */
+  --color-success-trend: #70e0a7; /* Calm green for high impact badges */
+
+  /* Extended Color Palette */
+  --color-primary-50: #f0f9ff;
+  --color-primary-100: #e0f2fe;
+  --color-primary-200: #bae6fd;
+  --color-primary-300: #7dd3fc;
+  --color-primary-400: #38bdf8;
+  --color-primary-500: #00d0ff;
+  --color-primary-600: #0284c7;
+  --color-primary-700: #0369a1;
+  --color-primary-800: #075985;
+  --color-primary-900: #0c4a6e;
+
+  --color-secondary-50: #f8fafc;
+  --color-secondary-100: #f1f5f9;
+  --color-secondary-200: #e2e8f0;
+  --color-secondary-300: #cbd5e1;
+  --color-secondary-400: #94a3b8;
+  --color-secondary-500: #64748b;
+  --color-secondary-600: #475569;
+  --color-secondary-700: #334155;
+  --color-secondary-800: #1e293b;
+  --color-secondary-900: #0f172a;
+
+  --color-success-50: #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-200: #bbf7d0;
+  --color-success-300: #86efac;
+  --color-success-400: #4ade80;
+  --color-success-500: #70e0a7;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+  --color-success-800: #166534;
+  --color-success-900: #14532d;
+
+  /* Typography Variables - Inter for headlines, JetBrains Mono for technical */
+  --font-family-headline: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-family-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', 'Monaco', 'Consolas', monospace;
+
+  /* Font Sizes - Optimized for readability */
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-base: 1rem; /* 16px */
+  --font-size-lg: 1.125rem; /* 18px */
+  --font-size-xl: 1.25rem; /* 20px */
+  --font-size-2xl: 1.5rem; /* 24px */
+  --font-size-3xl: 1.875rem; /* 30px */
+  --font-size-4xl: 2.25rem; /* 36px */
+  --font-size-5xl: 3rem; /* 48px */
+
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line Heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* Spacing Variables - 8px grid system */
+  --spacing-xs: 0.25rem; /* 4px */
+  --spacing-sm: 0.5rem; /* 8px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-lg: 1.5rem; /* 24px */
+  --spacing-xl: 2rem; /* 32px */
+  --spacing-2xl: 3rem; /* 48px */
+  --spacing-3xl: 4rem; /* 64px */
+  --spacing-4xl: 6rem; /* 96px */
+
+  /* Border Radius */
+  --border-radius-sm: 0.25rem; /* 4px */
+  --border-radius-md: 0.5rem; /* 8px */
+  --border-radius-lg: 0.75rem; /* 12px */
+  --border-radius-xl: 1rem; /* 16px */
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-glow: 0 0 20px rgba(0, 208, 255, 0.3); /* Primary accent glow */
+
+  /* Transitions */
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 250ms ease-in-out;
+  --transition-slow: 350ms ease-in-out;
+
+  /* Z-index scale */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+/* Dark mode optimizations */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: var(--color-primary-base);
+    --color-surface: var(--color-secondary-base);
+    --color-text: #ffffff;
+    --color-text-secondary: var(--color-secondary-accent);
+    --color-text-tertiary: var(--color-secondary-500);
+    --color-border: var(--color-secondary-700);
+    --color-accent: var(--color-primary-accent);
+    --color-success: var(--color-success-trend);
+  }
+}
+
+/* Light mode (if needed in future) */
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-background: #ffffff;
+    --color-surface: #f8f9fa;
+    --color-text: #212529;
+    --color-text-secondary: #6c757d;
+    --color-text-tertiary: #adb5bd;
+    --color-border: #e9ecef;
+    --color-accent: var(--color-primary-accent);
+    --color-success: var(--color-success-trend);
+  }
+}
+
+/* Utility classes for Citations design system */
+.citations-card {
+  background-color: var(--color-secondary-base);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-normal);
+}
+
+.citations-card:hover {
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
+}
+
+.citations-text-primary {
+  color: var(--color-text);
+  font-family: var(--font-family-headline);
+  font-weight: var(--font-weight-semibold);
+}
+
+.citations-text-secondary {
+  color: var(--color-text-secondary);
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-normal);
+}
+
+.citations-text-accent {
+  color: var(--color-primary-accent);
+  font-family: var(--font-family-headline);
+  font-weight: var(--font-weight-semibold);
+}
+
+.citations-text-mono {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.citations-button-primary {
+  background-color: var(--color-primary-accent);
+  color: var(--color-primary-base);
+  border: none;
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-family: var(--font-family-headline);
+  font-weight: var(--font-weight-medium);
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+
+.citations-button-primary:hover {
+  background-color: var(--color-primary-600);
+  box-shadow: var(--shadow-glow);
+}
+
+.citations-button-secondary {
+  background-color: transparent;
+  color: var(--color-secondary-accent);
+  border: 1px solid var(--color-secondary-accent);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-family: var(--font-family-headline);
+  font-weight: var(--font-weight-medium);
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+
+.citations-button-secondary:hover {
+  background-color: var(--color-primary-accent);
+  color: var(--color-primary-base);
+  border-color: var(--color-primary-accent);
+}

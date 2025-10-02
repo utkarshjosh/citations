@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <!-- Define the glow filter for the Primary Accent insight node -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <!-- FeGaussianBlur blurs the source graphic (the circle) -->
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur" />
+      <!-- FeFlood sets the color of the flood fill (the glow color) -->
+      <feFlood flood-color="#00D0FF" flood-opacity="0.8" result="color" />
+      <!-- FeComposite combines the color and the blurred shape -->
+      <feComposite in="color" in2="blur" operator="in" result="glow_effect" />
+      <!-- FeMerge layers the glow effect and the original source graphic -->
+      <feMerge>
+        <feMergeNode in="glow_effect" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- 
+    The "Stacked Insight" Icon
+    Colors:
+    #94A3B8 (Secondary Accent) - Lines (Citations)
+    #00D0FF (Primary Accent) - Circle (Insight)
+  -->
+
+  <!-- Lines representing the stacked citations/sources -->
+  <line x1="25" y1="58" x2="75" y2="58" stroke="#94A3B8" stroke-width="3" stroke-linecap="round"/>
+  <line x1="30" y1="68" x2="70" y2="68" stroke="#94A3B8" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- The node representing the distilled insight -->
+  <circle cx="50" cy="40" r="6" fill="#00D0FF" filter="url(#glow)"/>
+
+</svg>

@@ -1,0 +1,8 @@
+few mobile improvements in frontend 
+
+there is lot of black gap between two scrolls ,we want them to be a single running thread, so easy you can just hold in the middle and see 3 posts connected ,like tiktok
+
+coming back on top should be as easy as going down
+
+mobile browser like chrome have pull down to refresh, prevent that  when we scroll backwards
+

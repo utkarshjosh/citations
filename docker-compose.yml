@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: brain-scroll-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: brain_scroll
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    networks:
+      - brain-scroll-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/brain_scroll --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Python Scraper Service
+  scraper:
+    build:
+      context: ./backend/scraper
+      dockerfile: Dockerfile
+    container_name: brain-scroll-scraper
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/brain_scroll
+      - MONGODB_DB_NAME=brain_scroll
+    env_file:
+      - ./backend/scraper/.env
+    volumes:
+      - ./backend/scraper:/app
+      - scraper_logs:/app/logs
+    networks:
+      - brain-scroll-network
+
+  # Node.js API Service
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: brain-scroll-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongodb:27017/brain_scroll
+      - MONGODB_DB_NAME=brain_scroll
+    env_file:
+      - ./api/.env
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+    networks:
+      - brain-scroll-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # React Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: brain-scroll-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    environment:
+      - VITE_API_URL=http://localhost:3000/api
+    env_file:
+      - ./frontend/.env
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - brain-scroll-network
+
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local
+  scraper_logs:
+    driver: local
+
+networks:
+  brain-scroll-network:
+    driver: bridge

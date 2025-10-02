@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+
+    <!-- Google Fonts - Inter and JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- SEO Meta Tags -->
+    <meta
+      name="description"
+      content="Unlock the frontier of AI & CS. Personalized insights, no noise. Context at the Speed of Scroll."
+    />
+    <meta
+      name="keywords"
+      content="research papers, AI, machine learning, computer science, arxiv, summaries, citations, academic research"
+    />
+    <meta name="author" content="Citations" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://citations.app/" />
+    <meta property="og:title" content="Citations - The Edge of Insight" />
+    <meta
+      property="og:description"
+      content="Unlock the frontier of AI & CS. Personalized insights, no noise."
+    />
+    <meta property="og:image" content="/og-image.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://citations.app/" />
+    <meta property="twitter:title" content="Citations - The Edge of Insight" />
+    <meta
+      property="twitter:description"
+      content="Unlock the frontier of AI & CS. Personalized insights, no noise."
+    />
+    <meta property="twitter:image" content="/og-image.png" />
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#00D0FF" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Citations" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <title>Citations - The Edge of Insight</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('/sw.js')
+            .then(registration => {
+              console.log('SW registered:', registration);
+            })
+            .catch(error => {
+              console.log('SW registration failed:', error);
+            });
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,171 @@
+/* Import Citations theme system */
+@import '../theme/theme.css';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  /* Prevent pull-to-refresh and overscroll */
+  overscroll-behavior: none;
+  overscroll-behavior-y: none;
+  /* Smooth scrolling for better UX */
+  scroll-behavior: smooth;
+  /* Prevent horizontal scroll */
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  font-weight: var(--font-weight-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Citations dark theme */
+  background-color: var(--color-primary-base);
+  color: var(--color-text);
+
+  /* Mobile-first optimizations */
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  /* Prevent text size adjustment on orientation change */
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Prevent pull-to-refresh */
+  overscroll-behavior: none;
+  overscroll-behavior-y: none;
+  /* Allow vertical scrolling */
+  width: 100%;
+  min-height: 100vh;
+  max-width: 100vw;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--color-primary-base);
+  /* Allow scrolling on root */
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Mobile-first: Optimize touch targets */
+button,
+a,
+[role='button'] {
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+}
+
+/* Hide scrollbars while maintaining scroll functionality */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Specific class for swipe feed scroll container */
+.swipe-feed-scroll {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.swipe-feed-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Smooth momentum scrolling for iOS */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent zoom on double tap for better UX */
+button,
+a,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+
+/* Citations Typography System */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-family-headline);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text);
+}
+
+h1 {
+  font-size: var(--font-size-4xl);
+}
+
+h2 {
+  font-size: var(--font-size-3xl);
+}
+
+h3 {
+  font-size: var(--font-size-2xl);
+}
+
+h4 {
+  font-size: var(--font-size-xl);
+}
+
+h5 {
+  font-size: var(--font-size-lg);
+}
+
+h6 {
+  font-size: var(--font-size-base);
+}
+
+/* Technical content should use monospace font */
+code,
+pre,
+.mono {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+}
+
+/* Paper abstracts and summaries */
+.abstract,
+.summary,
+.technical-content {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+}
+
+/* Links and interactive elements */
+a {
+  color: var(--color-primary-accent);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-primary-600);
+}
+
+/* Button typography */
+button {
+  font-family: var(--font-family-headline);
+  font-weight: var(--font-weight-medium);
+}

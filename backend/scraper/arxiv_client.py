@@ -1,0 +1,211 @@
+"""
+arXiv API client with rate limiting, retry logic, and error handling
+"""
+import time
+import logging
+from datetime import datetime, timedelta
+from typing import List, Dict, Optional
+import arxiv
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+
+from config import (
+    ARXIV_RATE_LIMIT,
+    ARXIV_MAX_RETRIES,
+    ARXIV_RETRY_DELAY,
+    MAX_PAPERS_PER_CATEGORY,
+    DAYS_BACK
+)
+
+logger = logging.getLogger(__name__)
+
+
+class RateLimiter:
+    """Simple rate limiter to respect arXiv API guidelines"""
+    
+    def __init__(self, calls_per_second: float):
+        self.calls_per_second = calls_per_second
+        self.min_interval = 1.0 / calls_per_second
+        self.last_call = 0.0
+    
+    def wait(self):
+        """Wait if necessary to respect rate limit"""
+        elapsed = time.time() - self.last_call
+        if elapsed < self.min_interval:
+            sleep_time = self.min_interval - elapsed
+            time.sleep(sleep_time)
+        self.last_call = time.time()
+
+
+class ArxivClient:
+    """Wrapper around arxiv library with rate limiting and error handling"""
+    
+    def __init__(self):
+        self.rate_limiter = RateLimiter(ARXIV_RATE_LIMIT)
+        self.client = arxiv.Client(
+            page_size=100,
+            delay_seconds=1.0 / ARXIV_RATE_LIMIT,
+            num_retries=ARXIV_MAX_RETRIES
+        )
+    
+    @retry(
+        stop=stop_after_attempt(ARXIV_MAX_RETRIES),
+        wait=wait_exponential(multiplier=1, min=ARXIV_RETRY_DELAY, max=60),
+        retry=retry_if_exception_type((arxiv.ArxivError, ConnectionError)),
+        reraise=True
+    )
+    def fetch_papers_by_category(
+        self,
+        category: str,
+        max_results: int = MAX_PAPERS_PER_CATEGORY,
+        days_back: int = DAYS_BACK
+    ) -> List[Dict]:
+        """
+        Fetch papers from arXiv by category
+        
+        Args:
+            category: arXiv category (e.g., 'cs.AI')
+            max_results: Maximum number of papers to fetch
+            days_back: Number of days to look back for papers
+            
+        Returns:
+            List of paper dictionaries with metadata
+            
+        Raises:
+            arxiv.ArxivError: If arXiv API request fails
+        """
+        try:
+            # Respect rate limit
+            self.rate_limiter.wait()
+            
+            # Calculate date range
+            end_date = datetime.now()
+            start_date = end_date - timedelta(days=days_back)
+            
+            # Build search query
+            # Format: cat:cs.AI AND submittedDate:[start TO end]
+            date_query = f"submittedDate:[{start_date.strftime('%Y%m%d')}0000 TO {end_date.strftime('%Y%m%d')}2359]"
+            query = f"cat:{category} AND {date_query}"
+            
+            logger.info(f"Fetching papers for category: {category}, max_results: {max_results}")
+            
+            # Create search
+            search = arxiv.Search(
+                query=query,
+                max_results=max_results,
+                sort_by=arxiv.SortCriterion.SubmittedDate,
+                sort_order=arxiv.SortOrder.Descending
+            )
+            
+            # Fetch results
+            papers = []
+            for result in self.client.results(search):
+                paper = self._transform_paper(result, category)
+                papers.append(paper)
+            
+            logger.info(f"Successfully fetched {len(papers)} papers for category: {category}")
+            return papers
+            
+        except arxiv.ArxivError as e:
+            logger.error(f"arXiv API error for category {category}: {e}")
+            raise
+        except Exception as e:
+            logger.error(f"Unexpected error fetching papers for category {category}: {e}")
+            raise
+    
+    def _transform_paper(self, result: arxiv.Result, category: str) -> Dict:
+        """
+        Transform arxiv.Result to our paper schema
+        
+        Args:
+            result: arxiv.Result object
+            category: Primary category for this paper
+            
+        Returns:
+            Dictionary with paper metadata
+        """
+        return {
+            "arxiv_id": result.entry_id.split("/")[-1],  # Extract ID from URL
+            "title": result.title.strip(),
+            "authors": [author.name for author in result.authors],
+            "abstract": result.summary.strip().replace("\n", " "),
+            "arxiv_url": result.entry_id,
+            "pdf_url": result.pdf_url,
+            "category": category,
+            "primary_category": result.primary_category,
+            "categories": result.categories,
+            "published": result.published,
+            "updated": result.updated,
+            "created_at": datetime.now(),
+            "processed_at": None,  # Will be set after LLM processing
+            "summary": None,  # Will be generated by LLM
+            "why_it_matters": None,  # Will be generated by LLM
+            "applications": None,  # Will be generated by LLM
+            "likes_count": 0,
+            "views_count": 0
+        }
+    
+    def fetch_papers_by_categories(
+        self,
+        categories: List[str],
+        max_results_per_category: int = MAX_PAPERS_PER_CATEGORY,
+        days_back: int = DAYS_BACK
+    ) -> Dict[str, List[Dict]]:
+        """
+        Fetch papers from multiple categories
+        
+        Args:
+            categories: List of arXiv categories
+            max_results_per_category: Maximum papers per category
+            days_back: Number of days to look back
+            
+        Returns:
+            Dictionary mapping category to list of papers
+        """
+        all_papers = {}
+        
+        for category in categories:
+            try:
+                papers = self.fetch_papers_by_category(
+                    category=category,
+                    max_results=max_results_per_category,
+                    days_back=days_back
+                )
+                all_papers[category] = papers
+                logger.info(f"Category {category}: {len(papers)} papers fetched")
+            except Exception as e:
+                logger.error(f"Failed to fetch papers for category {category}: {e}")
+                all_papers[category] = []
+        
+        total_papers = sum(len(papers) for papers in all_papers.values())
+        logger.info(f"Total papers fetched across all categories: {total_papers}")
+        
+        return all_papers
+    
+    def fetch_paper_by_id(self, arxiv_id: str) -> Optional[Dict]:
+        """
+        Fetch a single paper by arXiv ID
+        
+        Args:
+            arxiv_id: arXiv paper ID
+            
+        Returns:
+            Paper dictionary or None if not found
+        """
+        try:
+            self.rate_limiter.wait()
+            
+            search = arxiv.Search(id_list=[arxiv_id])
+            result = next(self.client.results(search), None)
+            
+            if result:
+                # Use primary category from the paper
+                paper = self._transform_paper(result, result.primary_category)
+                logger.info(f"Successfully fetched paper: {arxiv_id}")
+                return paper
+            else:
+                logger.warning(f"Paper not found: {arxiv_id}")
+                return None
+                
+        except Exception as e:
+            logger.error(f"Error fetching paper {arxiv_id}: {e}")
+            return None
