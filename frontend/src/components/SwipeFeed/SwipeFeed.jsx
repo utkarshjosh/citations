@@ -204,7 +204,7 @@ export const SwipeFeed = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '60px 16px 20px',
+              padding: '10px 16px 20px',
               boxSizing: 'border-box',
               marginBottom: index < papers.length - 1 ? '16px' : '0', // Enhanced 16px gap for better visual separation
             }}

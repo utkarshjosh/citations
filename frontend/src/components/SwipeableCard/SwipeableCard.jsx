@@ -88,11 +88,11 @@ export const SwipeableCard = ({
   const handleLikeClick = async e => {
     e.stopPropagation();
     triggerHapticFeedback(50);
-    
+
     setIsLoading(true);
     setLocalLiked(!localLiked);
     setLocalLikesCount(prev => (localLiked ? prev - 1 : prev + 1));
-    
+
     try {
       await onLike?.(paper, !localLiked);
       showActionFeedback('success', localLiked ? 'Removed from likes' : 'Added to likes');
@@ -109,10 +109,10 @@ export const SwipeableCard = ({
   const handleSaveClick = async e => {
     e.stopPropagation();
     triggerHapticFeedback(50);
-    
+
     setIsLoading(true);
     setLocalSaved(!localSaved);
-    
+
     try {
       await onSave?.(paper, !localSaved);
       showActionFeedback('success', localSaved ? 'Removed from bookmarks' : 'Saved to bookmarks');
@@ -128,9 +128,9 @@ export const SwipeableCard = ({
   const handleShareClick = async e => {
     e.stopPropagation();
     triggerHapticFeedback(100);
-    
+
     setIsLoading(true);
-    
+
     try {
       await onShare?.(paper);
       showActionFeedback('success', 'Paper shared successfully');
@@ -144,7 +144,7 @@ export const SwipeableCard = ({
   const handleSourcePDFClick = e => {
     e.stopPropagation();
     triggerHapticFeedback(75);
-    
+
     // Open the PDF URL in a new tab
     if (url || arxiv_url) {
       window.open(url || arxiv_url, '_blank', 'noopener,noreferrer');
@@ -241,7 +241,10 @@ export const SwipeableCard = ({
             height: '100%',
             overflow: 'hidden', // Prevent content from overflowing
             color: 'var(--color-secondary-accent)', // Secondary Accent color
-            paddingBottom: '80px', // Reserve space for action buttons (4 buttons + gaps)
+            paddingRight: '80px', // Reserve space for action buttons on the right
+            paddingBottom: '80px', // Reserve space for authors at bottom
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
           {/* Top metadata line - Type | Date | Source */}
@@ -288,128 +291,165 @@ export const SwipeableCard = ({
             {title}
           </Text>
 
-          {/* Abstract/Summary - Monospace, limited lines */}
-          <Text
+          {/* Content Area - Dynamic space sharing between summary and Why It Matters */}
+          <Box
             style={{
-              fontFamily: 'var(--font-family-mono)',
-              fontSize: 'var(--font-size-sm)',
-              fontWeight: 'var(--font-weight-normal)',
-              lineHeight: 'var(--line-height-normal)',
-              color: 'var(--color-secondary-accent)',
-              marginBottom: 'var(--spacing-sm)',
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: 0, // Important for flex children
             }}
-            lineClamp={3}
           >
-            {summary}
-          </Text>
-
-          {/* Why It Matters - High-density expandable section */}
-          {whyItMatters && (
-            <Box>
-              <Button
-                variant="subtle"
-                size="sm"
-                leftSection={<IconBulb size={14} />}
-                rightSection={
-                  expanded ? <IconChevronUp size={14} /> : <IconChevronDown size={14} />
-                }
-                onClick={toggleExpanded}
-                fullWidth
+            {/* Abstract/Summary - Takes full space when Why It Matters is collapsed */}
+            <Box
+              style={{
+                flex: expanded ? 0 : 1, // Collapse when expanded, expand when collapsed
+                overflow: 'auto',
+                marginBottom: 'var(--spacing-sm)',
+                transition: 'flex 0.3s ease',
+                minHeight: expanded ? '0px' : '100px', // Minimum height when collapsed
+                maxHeight: expanded ? '60px' : 'none', // Limit height when expanded
+              }}
+            >
+              <Text
                 style={{
-                  background: 'rgba(0, 208, 255, 0.1)',
-                  color: 'var(--color-primary-accent)',
-                  border: '1px solid rgba(0, 208, 255, 0.2)',
-                  fontFamily: 'var(--font-family-headline)',
-                  fontWeight: 'var(--font-weight-semibold)',
-                  fontSize: 'var(--font-size-xs)',
-                  height: '32px',
-                  marginBottom: 'var(--spacing-sm)',
+                  fontFamily: 'var(--font-family-mono)',
+                  fontSize: 'var(--font-size-sm)',
+                  fontWeight: 'var(--font-weight-normal)',
+                  lineHeight: 'var(--line-height-normal)',
+                  color: 'var(--color-secondary-accent)',
                 }}
               >
-                Why It Matters
-              </Button>
+                {summary}
+              </Text>
+            </Box>
 
-              <Collapse in={expanded}>
-                <motion.div
-                  initial={{ opacity: 0, y: -5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
-                  transition={{ duration: 0.15 }}
+            {/* Why It Matters - Smooth expandable section */}
+            {whyItMatters && (
+              <Box style={{ flexShrink: 0 }}>
+                {/* Why It Matters Button - Fixed position in content flow */}
+                <Button
+                  variant="subtle"
+                  size="sm"
+                  leftSection={<IconBulb size={14} />}
+                  rightSection={
+                    expanded ? <IconChevronUp size={14} /> : <IconChevronDown size={14} />
+                  }
+                  onClick={toggleExpanded}
+                  fullWidth
+                  style={{
+                    background: 'rgba(0, 208, 255, 0.1)',
+                    color: 'var(--color-primary-accent)',
+                    border: '1px solid rgba(0, 208, 255, 0.2)',
+                    fontFamily: 'var(--font-family-headline)',
+                    fontWeight: 'var(--font-weight-semibold)',
+                    fontSize: 'var(--font-size-xs)',
+                    height: '32px',
+                    marginBottom: 'var(--spacing-sm)',
+                  }}
                 >
-                  <Box
-                    p="sm"
-                    style={{
-                      background: 'rgba(0, 208, 255, 0.05)',
-                      borderRadius: '8px',
-                      border: '1px solid rgba(0, 208, 255, 0.1)',
-                    }}
+                  Why It Matters
+                </Button>
+
+                {/* Expandable Content - Smooth height transition */}
+                <Collapse in={expanded}>
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    style={{ overflow: 'hidden' }}
                   >
-                    <Text
-                      size="sm"
+                    <Box
+                      p="sm"
                       style={{
-                        color: 'var(--color-secondary-accent)',
-                        lineHeight: 'var(--line-height-normal)',
-                        fontFamily: 'var(--font-family-mono)',
-                        fontSize: 'var(--font-size-sm)',
+                        background: 'rgba(0, 208, 255, 0.05)',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(0, 208, 255, 0.1)',
+                        maxHeight: '300px',
+                        overflow: 'auto',
                       }}
                     >
-                      {whyItMatters}
-                    </Text>
+                      <Text
+                        size="sm"
+                        style={{
+                          color: 'var(--color-secondary-accent)',
+                          lineHeight: 'var(--line-height-normal)',
+                          fontFamily: 'var(--font-family-mono)',
+                          fontSize: 'var(--font-size-sm)',
+                          marginBottom:
+                            applications && applications.length > 0 ? 'var(--spacing-sm)' : 0,
+                        }}
+                      >
+                        {whyItMatters}
+                      </Text>
 
-                    {applications && applications.length > 0 && (
-                      <>
-                        <Divider my="xs" color="rgba(0, 208, 255, 0.2)" />
-                        <Group gap="xs" mb="xs">
-                          <IconRocket size={14} color="#00D0FF" />
-                          <Text
-                            size="xs"
-                            fw={600}
-                            style={{
-                              color: 'var(--color-primary-accent)',
-                              fontFamily: 'var(--font-family-headline)',
-                              textTransform: 'uppercase',
-                              letterSpacing: '0.5px',
-                            }}
-                          >
-                            Applications
-                          </Text>
-                        </Group>
-                        <Stack gap="xs">
-                          {applications.map((app, idx) => (
+                      {applications && applications.length > 0 && (
+                        <>
+                          <Divider my="xs" color="rgba(0, 208, 255, 0.2)" />
+                          <Group gap="xs" mb="xs">
+                            <IconRocket size={14} color="#00D0FF" />
                             <Text
-                              key={idx}
                               size="xs"
-                              pl="md"
+                              fw={600}
                               style={{
-                                color: 'var(--color-secondary-accent)',
-                                fontFamily: 'var(--font-family-mono)',
-                                fontSize: 'var(--font-size-xs)',
+                                color: 'var(--color-primary-accent)',
+                                fontFamily: 'var(--font-family-headline)',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
                               }}
                             >
-                              • {app}
+                              Applications
                             </Text>
-                          ))}
-                        </Stack>
-                      </>
-                    )}
-                  </Box>
-                </motion.div>
-              </Collapse>
-            </Box>
-          )}
+                          </Group>
+                          <Stack gap="xs">
+                            {applications.map((app, idx) => (
+                              <Text
+                                key={idx}
+                                size="xs"
+                                pl="md"
+                                style={{
+                                  color: 'var(--color-secondary-accent)',
+                                  fontFamily: 'var(--font-family-mono)',
+                                  fontSize: 'var(--font-size-xs)',
+                                }}
+                              >
+                                • {app}
+                              </Text>
+                            ))}
+                          </Stack>
+                        </>
+                      )}
+                    </Box>
+                  </motion.div>
+                </Collapse>
+              </Box>
+            )}
+          </Box>
+        </Stack>
 
-          {/* Authors - Compact metadata */}
-          {authorsArray && authorsArray.length > 0 && (
+        {/* Authors - Fixed at bottom, always visible */}
+        {authorsArray && authorsArray.length > 0 && (
+          <Box
+            style={{
+              position: 'absolute',
+              bottom: '16px', // Position within the card
+              left: '16px',
+              right: '96px', // Leave space for action buttons
+              zIndex: 2,
+            }}
+          >
             <Text
               size="xs"
               style={{
                 color: 'var(--color-secondary-accent)',
                 fontFamily: 'var(--font-family-mono)',
                 fontSize: 'var(--font-size-xs)',
-                marginTop: 'auto',
-                paddingTop: 'var(--spacing-sm)',
-                paddingBottom: 'var(--spacing-sm)',
-                borderTop: '1px solid rgba(148, 163, 184, 0.1)',
+                padding: '8px 12px',
+                background: 'rgba(0, 0, 0, 0.7)',
+                borderRadius: '6px',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(148, 163, 184, 0.1)',
                 maxHeight: '40px',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -424,20 +464,21 @@ export const SwipeableCard = ({
                 : ''}
               {authorsArray.length > 2 ? ` +${authorsArray.length - 2}` : ''}
             </Text>
-          )}
-        </Stack>
+          </Box>
+        )}
 
         {/* Action buttons - Enhanced design with new buttons */}
         <Box
           style={{
             position: 'absolute',
             right: '16px',
-            bottom: '80px',
+            top: '50%',
+            transform: 'translateY(-50%)',
             display: 'flex',
             flexDirection: 'column',
-            gap: '8px', // Reduced gap to fit better
+            gap: '8px',
             zIndex: 2,
-            maxHeight: '220px', // Accommodate 4 buttons with like count (52+40+40+40+24 gaps)
+            maxHeight: '80vh', // Limit to viewport height
             overflow: 'hidden',
           }}
         >
@@ -446,11 +487,11 @@ export const SwipeableCard = ({
             <Box style={{ textAlign: 'center', height: '52px' }}>
               <motion.div
                 whileTap={{ scale: 1.1 }}
-                whileHover={{ 
+                whileHover={{
                   scale: 1.05,
-                  boxShadow: localLiked 
-                    ? '0 0 20px rgba(0, 208, 255, 0.6)' 
-                    : '0 0 12px rgba(148, 163, 184, 0.3)'
+                  boxShadow: localLiked
+                    ? '0 0 20px rgba(0, 208, 255, 0.6)'
+                    : '0 0 12px rgba(148, 163, 184, 0.3)',
                 }}
                 transition={{ duration: 0.15 }}
               >
@@ -471,7 +512,10 @@ export const SwipeableCard = ({
                   }}
                 >
                   {isLoading ? (
-                    <Loader size="xs" color={localLiked ? "white" : "var(--color-secondary-accent)"} />
+                    <Loader
+                      size="xs"
+                      color={localLiked ? 'white' : 'var(--color-secondary-accent)'}
+                    />
                   ) : localLiked ? (
                     <IconHeartFilled size={18} color="white" />
                   ) : (
@@ -508,11 +552,11 @@ export const SwipeableCard = ({
           <Tooltip label={localSaved ? 'Remove bookmark' : 'Bookmark'} position="left">
             <motion.div
               whileTap={{ scale: 1.1 }}
-              whileHover={{ 
+              whileHover={{
                 scale: 1.05,
-                boxShadow: localSaved 
-                  ? '0 0 20px rgba(112, 224, 167, 0.6)' 
-                  : '0 0 12px rgba(148, 163, 184, 0.3)'
+                boxShadow: localSaved
+                  ? '0 0 20px rgba(112, 224, 167, 0.6)'
+                  : '0 0 12px rgba(148, 163, 184, 0.3)',
               }}
               transition={{ duration: 0.15 }}
             >
@@ -533,7 +577,10 @@ export const SwipeableCard = ({
                 }}
               >
                 {isLoading ? (
-                  <Loader size="xs" color={localSaved ? "white" : "var(--color-secondary-accent)"} />
+                  <Loader
+                    size="xs"
+                    color={localSaved ? 'white' : 'var(--color-secondary-accent)'}
+                  />
                 ) : localSaved ? (
                   <IconBookmarkFilled size={18} color="white" />
                 ) : (
@@ -547,9 +594,9 @@ export const SwipeableCard = ({
           <Tooltip label="Share" position="left">
             <motion.div
               whileTap={{ scale: 1.1 }}
-              whileHover={{ 
+              whileHover={{
                 scale: 1.05,
-                boxShadow: '0 0 12px rgba(148, 163, 184, 0.3)'
+                boxShadow: '0 0 12px rgba(148, 163, 184, 0.3)',
               }}
               transition={{ duration: 0.15 }}
             >
@@ -579,9 +626,9 @@ export const SwipeableCard = ({
           <Tooltip label="View PDF" position="left">
             <motion.div
               whileTap={{ scale: 1.1 }}
-              whileHover={{ 
+              whileHover={{
                 scale: 1.05,
-                boxShadow: '0 0 12px rgba(148, 163, 184, 0.3)'
+                boxShadow: '0 0 12px rgba(148, 163, 184, 0.3)',
               }}
               transition={{ duration: 0.15 }}
             >
@@ -616,9 +663,10 @@ export const SwipeableCard = ({
                 left: '50%',
                 transform: 'translateX(-50%)',
                 zIndex: 10,
-                background: actionFeedback.type === 'success' 
-                  ? 'rgba(112, 224, 167, 0.95)' 
-                  : 'rgba(239, 68, 68, 0.95)',
+                background:
+                  actionFeedback.type === 'success'
+                    ? 'rgba(112, 224, 167, 0.95)'
+                    : 'rgba(239, 68, 68, 0.95)',
                 color: 'white',
                 padding: '8px 16px',
                 borderRadius: '8px',
@@ -628,17 +676,15 @@ export const SwipeableCard = ({
                 alignItems: 'center',
                 gap: '6px',
                 backdropFilter: 'blur(10px)',
-                border: `1px solid ${actionFeedback.type === 'success' 
-                  ? 'rgba(112, 224, 167, 0.3)' 
-                  : 'rgba(239, 68, 68, 0.3)'}`,
+                border: `1px solid ${
+                  actionFeedback.type === 'success'
+                    ? 'rgba(112, 224, 167, 0.3)'
+                    : 'rgba(239, 68, 68, 0.3)'
+                }`,
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
               }}
             >
-              {actionFeedback.type === 'success' ? (
-                <IconCheck size={14} />
-              ) : (
-                <IconX size={14} />
-              )}
+              {actionFeedback.type === 'success' ? <IconCheck size={14} /> : <IconX size={14} />}
               {actionFeedback.message}
             </motion.div>
           )}
