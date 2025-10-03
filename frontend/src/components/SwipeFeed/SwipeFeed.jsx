@@ -70,7 +70,8 @@ export const SwipeFeed = ({
     const scrollTop = containerRef.current.scrollTop;
 
     // Prevent pull-to-refresh when at top and pulling down
-    if (scrollTop === 0 && touchDiff > 0) {
+    // Only prevent if the event is cancelable
+    if (scrollTop === 0 && touchDiff > 0 && e.cancelable) {
       e.preventDefault();
     }
   }, []);
@@ -79,7 +80,7 @@ export const SwipeFeed = ({
     const container = containerRef.current;
     if (!container) return;
 
-    // Add passive: false to enable preventDefault for pull-to-refresh prevention
+    // Add event listeners with appropriate passive settings
     container.addEventListener('touchstart', handleTouchStart, { passive: true });
     container.addEventListener('touchmove', handleTouchMove, { passive: false });
     container.addEventListener('scroll', handleScroll, { passive: true });

@@ -23,6 +23,7 @@ import {
   IconChevronUp,
   IconBulb,
   IconRocket,
+  IconFileText,
 } from '@tabler/icons-react';
 import PropTypes from 'prop-types';
 import { getCategoryColor } from '../../theme/colors';
@@ -43,13 +44,14 @@ export const SwipeableCard = ({
     summary,
     authors,
     category,
-    publishedDate,
+    published_date: publishedDate,
     url,
-    whyItMatters,
+    arxiv_url,
+    why_it_matters: whyItMatters,
     applications,
-    likesCount = 0,
+    likes_count: likesCount = 0,
   } = paper;
-
+  const authorsArray = Array.isArray(authors) ? authors : authors.split(';');
   const [expanded, setExpanded] = useState(false);
   const [localLiked, setLocalLiked] = useState(isLiked);
   const [localSaved, setLocalSaved] = useState(isSaved);
@@ -81,6 +83,14 @@ export const SwipeableCard = ({
   const handleShareClick = e => {
     e.stopPropagation();
     onShare?.(paper);
+  };
+
+  const handleSourcePDFClick = e => {
+    e.stopPropagation();
+    // Open the PDF URL in a new tab
+    if (url || arxiv_url) {
+      window.open(url || arxiv_url, '_blank', 'noopener,noreferrer');
+    }
   };
 
   const toggleExpanded = e => {
@@ -168,8 +178,8 @@ export const SwipeableCard = ({
             zIndex: 1,
             height: '100%',
             overflow: 'hidden', // Prevent content from overflowing
-            color: '#94A3B8', // Secondary Accent color
-            paddingBottom: '80px', // Reserve space for action buttons
+            color: 'var(--color-secondary-accent)', // Secondary Accent color
+            paddingBottom: '80px', // Reserve space for action buttons (4 buttons + gaps)
           }}
         >
           {/* Top metadata line - Type | Date | Source */}
@@ -177,8 +187,8 @@ export const SwipeableCard = ({
             <Text
               size="xs"
               style={{
-                fontFamily: 'JetBrains Mono, monospace',
-                color: '#94A3B8',
+                fontFamily: 'var(--font-family-mono)',
+                color: 'var(--color-secondary-accent)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
               }}
@@ -190,10 +200,10 @@ export const SwipeableCard = ({
               size="xs"
               component="a"
               href={url}
-              target="_blank"
+              target={arxiv_url}
               rel="noopener noreferrer"
               style={{
-                color: '#00D0FF', // Primary Accent
+                color: 'var(--color-primary-accent)', // Primary Accent
                 marginLeft: 'auto',
               }}
             >
@@ -204,12 +214,12 @@ export const SwipeableCard = ({
           {/* Title - Large, prominent */}
           <Text
             style={{
-              fontFamily: 'Inter, sans-serif',
-              fontSize: '20px',
-              fontWeight: 600, // Semibold
-              lineHeight: 1.3,
-              color: '#FFFFFF', // Pure white for maximum contrast
-              marginBottom: '8px',
+              fontFamily: 'var(--font-family-headline)',
+              fontSize: 'var(--font-size-xl)',
+              fontWeight: 'var(--font-weight-semibold)',
+              lineHeight: 'var(--line-height-tight)',
+              color: 'var(--color-text)',
+              marginBottom: 'var(--spacing-sm)',
             }}
             lineClamp={2}
           >
@@ -219,12 +229,12 @@ export const SwipeableCard = ({
           {/* Abstract/Summary - Monospace, limited lines */}
           <Text
             style={{
-              fontFamily: 'JetBrains Mono, monospace',
-              fontSize: '14px',
-              fontWeight: 400,
-              lineHeight: 1.5,
-              color: '#94A3B8', // Secondary Accent
-              marginBottom: '12px',
+              fontFamily: 'var(--font-family-mono)',
+              fontSize: 'var(--font-size-sm)',
+              fontWeight: 'var(--font-weight-normal)',
+              lineHeight: 'var(--line-height-normal)',
+              color: 'var(--color-secondary-accent)',
+              marginBottom: 'var(--spacing-sm)',
             }}
             lineClamp={3}
           >
@@ -244,13 +254,14 @@ export const SwipeableCard = ({
                 onClick={toggleExpanded}
                 fullWidth
                 style={{
-                  background: 'rgba(0, 208, 255, 0.1)', // Primary Accent with low opacity
-                  color: '#00D0FF', // Primary Accent
+                  background: 'rgba(0, 208, 255, 0.1)',
+                  color: 'var(--color-primary-accent)',
                   border: '1px solid rgba(0, 208, 255, 0.2)',
-                  fontWeight: 600,
-                  fontSize: '12px',
+                  fontFamily: 'var(--font-family-headline)',
+                  fontWeight: 'var(--font-weight-semibold)',
+                  fontSize: 'var(--font-size-xs)',
                   height: '32px',
-                  marginBottom: '8px',
+                  marginBottom: 'var(--spacing-sm)',
                 }}
               >
                 Why It Matters
@@ -274,10 +285,10 @@ export const SwipeableCard = ({
                     <Text
                       size="sm"
                       style={{
-                        color: '#94A3B8',
-                        lineHeight: 1.4,
-                        fontFamily: 'JetBrains Mono, monospace',
-                        fontSize: '13px',
+                        color: 'var(--color-secondary-accent)',
+                        lineHeight: 'var(--line-height-normal)',
+                        fontFamily: 'var(--font-family-mono)',
+                        fontSize: 'var(--font-size-sm)',
                       }}
                     >
                       {whyItMatters}
@@ -292,8 +303,8 @@ export const SwipeableCard = ({
                             size="xs"
                             fw={600}
                             style={{
-                              color: '#00D0FF',
-                              fontFamily: 'Inter, sans-serif',
+                              color: 'var(--color-primary-accent)',
+                              fontFamily: 'var(--font-family-headline)',
                               textTransform: 'uppercase',
                               letterSpacing: '0.5px',
                             }}
@@ -308,9 +319,9 @@ export const SwipeableCard = ({
                               size="xs"
                               pl="md"
                               style={{
-                                color: '#94A3B8',
-                                fontFamily: 'JetBrains Mono, monospace',
-                                fontSize: '12px',
+                                color: 'var(--color-secondary-accent)',
+                                fontFamily: 'var(--font-family-mono)',
+                                fontSize: 'var(--font-size-xs)',
                               }}
                             >
                               • {app}
@@ -326,105 +337,125 @@ export const SwipeableCard = ({
           )}
 
           {/* Authors - Compact metadata */}
-          {authors && authors.length > 0 && (
+          {authorsArray && authorsArray.length > 0 && (
             <Text
               size="xs"
               style={{
-                color: '#94A3B8',
-                fontFamily: 'JetBrains Mono, monospace',
-                fontSize: '12px',
+                color: 'var(--color-secondary-accent)',
+                fontFamily: 'var(--font-family-mono)',
+                fontSize: 'var(--font-size-xs)',
                 marginTop: 'auto',
-                paddingTop: '8px',
-                paddingBottom: '8px', // Add bottom padding to ensure visibility
+                paddingTop: 'var(--spacing-sm)',
+                paddingBottom: 'var(--spacing-sm)',
                 borderTop: '1px solid rgba(148, 163, 184, 0.1)',
-                maxHeight: '40px', // Limit height to prevent overflow
+                maxHeight: '40px',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
               }}
             >
-              {Array.isArray(authors)
-                ? authors
+              {authorsArray
+                ? authorsArray
                     .slice(0, 2)
                     .filter(a => a && typeof a === 'string')
                     .join(', ')
-                : typeof authors === 'string'
-                  ? authors
-                  : ''}
-              {Array.isArray(authors) && authors.length > 2 && ` +${authors.length - 2}`}
+                : ''}
+              {authorsArray.length > 2 ? ` +${authorsArray.length - 2}` : ''}
             </Text>
           )}
         </Stack>
 
-        {/* Action buttons - Compact high-density layout */}
+        {/* Action buttons - Enhanced design with new buttons */}
         <Box
           style={{
             position: 'absolute',
             right: '16px',
-            bottom: '16px',
+            bottom: '80px',
             display: 'flex',
             flexDirection: 'column',
-            gap: '12px',
+            gap: '8px', // Reduced gap to fit better
             zIndex: 2,
-            maxHeight: '60px', // Ensure buttons stay within card
+            maxHeight: '220px', // Accommodate 4 buttons with like count (52+40+40+40+24 gaps)
             overflow: 'hidden',
           }}
         >
           {/* Like button */}
           <Tooltip label={localLiked ? 'Unlike' : 'Like'} position="left">
-            <Box style={{ textAlign: 'center' }}>
-              <motion.div whileTap={{ scale: 1.1 }}>
+            <Box style={{ textAlign: 'center', height: '52px' }}>
+              <motion.div
+                whileTap={{ scale: 1.1 }}
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.15 }}
+              >
                 <ActionIcon
                   size={40}
                   radius="md"
                   onClick={handleLikeClick}
                   style={{
                     background: localLiked
-                      ? '#00D0FF' // Primary Accent
-                      : 'rgba(148, 163, 184, 0.2)', // Secondary Accent with opacity
-                    border: '1px solid rgba(148, 163, 184, 0.3)',
+                      ? 'var(--color-primary-accent)'
+                      : 'rgba(148, 163, 184, 0.15)',
+                    border: `1px solid ${localLiked ? 'var(--color-primary-accent)' : 'rgba(148, 163, 184, 0.25)'}`,
+                    transition: 'all 0.2s ease',
+                    boxShadow: localLiked ? '0 0 12px rgba(0, 208, 255, 0.4)' : 'none',
                   }}
                 >
                   {localLiked ? (
                     <IconHeartFilled size={18} color="white" />
                   ) : (
-                    <IconHeart size={18} color="#94A3B8" />
+                    <IconHeart size={18} color="var(--color-secondary-accent)" />
                   )}
                 </ActionIcon>
               </motion.div>
-              {localLikesCount > 0 && (
-                <Text
-                  size="xs"
-                  fw={600}
-                  mt={2}
-                  style={{
-                    color: '#94A3B8',
-                    fontFamily: 'JetBrains Mono, monospace',
-                    fontSize: '10px',
-                  }}
-                >
-                  {localLikesCount}
-                </Text>
-              )}
+              <Text
+                size="xs"
+                fw={600}
+                mt={2}
+                style={{
+                  color:
+                    localLikesCount > 0
+                      ? localLiked
+                        ? 'var(--color-primary-accent)'
+                        : 'var(--color-secondary-accent)'
+                      : 'transparent',
+                  fontFamily: 'var(--font-family-mono)',
+                  fontSize: '10px',
+                  transition: 'color 0.2s ease',
+                  height: '12px', // Reserve space for text
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                {localLikesCount > 0 ? localLikesCount : '0'}
+              </Text>
             </Box>
           </Tooltip>
 
           {/* Bookmark button */}
           <Tooltip label={localSaved ? 'Remove bookmark' : 'Bookmark'} position="left">
-            <motion.div whileTap={{ scale: 1.1 }}>
+            <motion.div
+              whileTap={{ scale: 1.1 }}
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.15 }}
+            >
               <ActionIcon
                 size={40}
                 radius="md"
                 onClick={handleSaveClick}
                 style={{
-                  background: localSaved ? '#70E0A7' : 'rgba(148, 163, 184, 0.2)', // Success color or Secondary Accent
-                  border: '1px solid rgba(148, 163, 184, 0.3)',
+                  background: localSaved
+                    ? 'var(--color-success-trend)'
+                    : 'rgba(148, 163, 184, 0.15)',
+                  border: `1px solid ${localSaved ? 'var(--color-success-trend)' : 'rgba(148, 163, 184, 0.25)'}`,
+                  transition: 'all 0.2s ease',
+                  boxShadow: localSaved ? '0 0 12px rgba(112, 224, 167, 0.4)' : 'none',
                 }}
               >
                 {localSaved ? (
                   <IconBookmarkFilled size={18} color="white" />
                 ) : (
-                  <IconBookmark size={18} color="#94A3B8" />
+                  <IconBookmark size={18} color="var(--color-secondary-accent)" />
                 )}
               </ActionIcon>
             </motion.div>
@@ -432,17 +463,44 @@ export const SwipeableCard = ({
 
           {/* Share button */}
           <Tooltip label="Share" position="left">
-            <motion.div whileTap={{ scale: 1.1 }}>
+            <motion.div
+              whileTap={{ scale: 1.1 }}
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.15 }}
+            >
               <ActionIcon
                 size={40}
                 radius="md"
                 onClick={handleShareClick}
                 style={{
-                  background: 'rgba(148, 163, 184, 0.2)',
-                  border: '1px solid rgba(148, 163, 184, 0.3)',
+                  background: 'rgba(148, 163, 184, 0.15)',
+                  border: '1px solid rgba(148, 163, 184, 0.25)',
+                  transition: 'all 0.2s ease',
                 }}
               >
-                <IconShare size={18} color="#94A3B8" />
+                <IconShare size={18} color="var(--color-secondary-accent)" />
+              </ActionIcon>
+            </motion.div>
+          </Tooltip>
+
+          {/* Source PDF button */}
+          <Tooltip label="View PDF" position="left">
+            <motion.div
+              whileTap={{ scale: 1.1 }}
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.15 }}
+            >
+              <ActionIcon
+                size={40}
+                radius="md"
+                onClick={handleSourcePDFClick}
+                style={{
+                  background: 'rgba(148, 163, 184, 0.15)',
+                  border: '1px solid rgba(148, 163, 184, 0.25)',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <IconFileText size={18} color="var(--color-secondary-accent)" />
               </ActionIcon>
             </motion.div>
           </Tooltip>
@@ -456,7 +514,7 @@ SwipeableCard.propTypes = {
   paper: PropTypes.shape({
     title: PropTypes.string.isRequired,
     summary: PropTypes.string,
-    authors: PropTypes.arrayOf(PropTypes.string),
+    authors: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.string), PropTypes.string]),
     category: PropTypes.string,
     publishedDate: PropTypes.string,
     url: PropTypes.string,

@@ -42,13 +42,14 @@ export const PaperCard = ({
     summary,
     authors,
     category,
-    publishedDate,
+    published_date: publishedDate,
     url,
-    whyItMatters,
+    why_it_matters: whyItMatters,
     applications,
-    likesCount = 0,
+    likes_count: likesCount = 0,
   } = paper;
-
+  console.log('3333333333333333333333333333');
+  console.log(whyItMatters);
   const [expanded, setExpanded] = useState(false);
   const [localLiked, setLocalLiked] = useState(isLiked);
   const [localLikesCount, setLocalLikesCount] = useState(likesCount);
