@@ -164,7 +164,7 @@ agentic paper fetcher with Gemini"""
             "categories": categories,
             "published": paper_dict.get("published_date"),
             "updated": paper_dict.get("updated_date") or paper_dict.get("published_date"),
-            "created_at": datetime.now(),
+            "created_at": datetime.now().isoformat(),
             "processed_at": None,
             "summary": None,
             "why_it_matters": None,
@@ -279,7 +279,7 @@ agentic paper fetcher with Gemini"""
             paper['summary'] = result.get('summary')
             paper['why_it_matters'] = result.get('why_it_matters')
             paper['applications'] = result.get('applications')
-            paper['processed_at'] = datetime.now()
+            paper['processed_at'] = datetime.now().isoformat()
             
             logger.info(f"Generated intelligent summary for paper: {paper['arxiv_id']}")
             return paper
