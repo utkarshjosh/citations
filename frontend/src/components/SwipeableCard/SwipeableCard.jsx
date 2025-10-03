@@ -11,6 +11,7 @@ import {
   Collapse,
   Button,
   Divider,
+  Loader,
 } from '@mantine/core';
 import {
   IconHeart,
@@ -24,6 +25,8 @@ import {
   IconBulb,
   IconRocket,
   IconFileText,
+  IconCheck,
+  IconX,
 } from '@tabler/icons-react';
 import PropTypes from 'prop-types';
 import { getCategoryColor } from '../../theme/colors';
@@ -56,6 +59,8 @@ export const SwipeableCard = ({
   const [localLiked, setLocalLiked] = useState(isLiked);
   const [localSaved, setLocalSaved] = useState(isSaved);
   const [localLikesCount, setLocalLikesCount] = useState(likesCount);
+  const [isLoading, setIsLoading] = useState(false);
+  const [actionFeedback, setActionFeedback] = useState(null);
 
   const categoryStyle = getCategoryColor(category);
   const paperId = paper.id || paper._id;
@@ -67,34 +72,91 @@ export const SwipeableCard = ({
     }
   }, [paperId]);
 
-  const handleLikeClick = e => {
+  // Haptic feedback utility
+  const triggerHapticFeedback = (pattern = 50) => {
+    if ('vibrate' in navigator) {
+      navigator.vibrate(pattern);
+    }
+  };
+
+  // Show action feedback
+  const showActionFeedback = (type, message) => {
+    setActionFeedback({ type, message });
+    setTimeout(() => setActionFeedback(null), 3000);
+  };
+
+  const handleLikeClick = async e => {
     e.stopPropagation();
+    triggerHapticFeedback(50);
+    
+    setIsLoading(true);
     setLocalLiked(!localLiked);
     setLocalLikesCount(prev => (localLiked ? prev - 1 : prev + 1));
-    onLike?.(paper, !localLiked);
+    
+    try {
+      await onLike?.(paper, !localLiked);
+      showActionFeedback('success', localLiked ? 'Removed from likes' : 'Added to likes');
+    } catch (error) {
+      // Revert on error
+      setLocalLiked(localLiked);
+      setLocalLikesCount(prev => (localLiked ? prev + 1 : prev - 1));
+      showActionFeedback('error', 'Failed to update like');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleSaveClick = e => {
+  const handleSaveClick = async e => {
     e.stopPropagation();
+    triggerHapticFeedback(50);
+    
+    setIsLoading(true);
     setLocalSaved(!localSaved);
-    onSave?.(paper, !localSaved);
+    
+    try {
+      await onSave?.(paper, !localSaved);
+      showActionFeedback('success', localSaved ? 'Removed from bookmarks' : 'Saved to bookmarks');
+    } catch (error) {
+      // Revert on error
+      setLocalSaved(localSaved);
+      showActionFeedback('error', 'Failed to update bookmark');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleShareClick = e => {
+  const handleShareClick = async e => {
     e.stopPropagation();
-    onShare?.(paper);
+    triggerHapticFeedback(100);
+    
+    setIsLoading(true);
+    
+    try {
+      await onShare?.(paper);
+      showActionFeedback('success', 'Paper shared successfully');
+    } catch (error) {
+      showActionFeedback('error', 'Failed to share paper');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSourcePDFClick = e => {
     e.stopPropagation();
+    triggerHapticFeedback(75);
+    
     // Open the PDF URL in a new tab
     if (url || arxiv_url) {
       window.open(url || arxiv_url, '_blank', 'noopener,noreferrer');
+      showActionFeedback('success', 'PDF opened in new tab');
+    } else {
+      showActionFeedback('error', 'PDF not available');
     }
   };
 
   const toggleExpanded = e => {
     e.stopPropagation();
+    triggerHapticFeedback(25);
     setExpanded(!expanded);
   };
 
@@ -384,13 +446,19 @@ export const SwipeableCard = ({
             <Box style={{ textAlign: 'center', height: '52px' }}>
               <motion.div
                 whileTap={{ scale: 1.1 }}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ 
+                  scale: 1.05,
+                  boxShadow: localLiked 
+                    ? '0 0 20px rgba(0, 208, 255, 0.6)' 
+                    : '0 0 12px rgba(148, 163, 184, 0.3)'
+                }}
                 transition={{ duration: 0.15 }}
               >
                 <ActionIcon
                   size={40}
                   radius="md"
                   onClick={handleLikeClick}
+                  disabled={isLoading}
                   style={{
                     background: localLiked
                       ? 'var(--color-primary-accent)'
@@ -398,9 +466,13 @@ export const SwipeableCard = ({
                     border: `1px solid ${localLiked ? 'var(--color-primary-accent)' : 'rgba(148, 163, 184, 0.25)'}`,
                     transition: 'all 0.2s ease',
                     boxShadow: localLiked ? '0 0 12px rgba(0, 208, 255, 0.4)' : 'none',
+                    cursor: isLoading ? 'not-allowed' : 'pointer',
+                    opacity: isLoading ? 0.7 : 1,
                   }}
                 >
-                  {localLiked ? (
+                  {isLoading ? (
+                    <Loader size="xs" color={localLiked ? "white" : "var(--color-secondary-accent)"} />
+                  ) : localLiked ? (
                     <IconHeartFilled size={18} color="white" />
                   ) : (
                     <IconHeart size={18} color="var(--color-secondary-accent)" />
@@ -436,13 +508,19 @@ export const SwipeableCard = ({
           <Tooltip label={localSaved ? 'Remove bookmark' : 'Bookmark'} position="left">
             <motion.div
               whileTap={{ scale: 1.1 }}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ 
+                scale: 1.05,
+                boxShadow: localSaved 
+                  ? '0 0 20px rgba(112, 224, 167, 0.6)' 
+                  : '0 0 12px rgba(148, 163, 184, 0.3)'
+              }}
               transition={{ duration: 0.15 }}
             >
               <ActionIcon
                 size={40}
                 radius="md"
                 onClick={handleSaveClick}
+                disabled={isLoading}
                 style={{
                   background: localSaved
                     ? 'var(--color-success-trend)'
@@ -450,9 +528,13 @@ export const SwipeableCard = ({
                   border: `1px solid ${localSaved ? 'var(--color-success-trend)' : 'rgba(148, 163, 184, 0.25)'}`,
                   transition: 'all 0.2s ease',
                   boxShadow: localSaved ? '0 0 12px rgba(112, 224, 167, 0.4)' : 'none',
+                  cursor: isLoading ? 'not-allowed' : 'pointer',
+                  opacity: isLoading ? 0.7 : 1,
                 }}
               >
-                {localSaved ? (
+                {isLoading ? (
+                  <Loader size="xs" color={localSaved ? "white" : "var(--color-secondary-accent)"} />
+                ) : localSaved ? (
                   <IconBookmarkFilled size={18} color="white" />
                 ) : (
                   <IconBookmark size={18} color="var(--color-secondary-accent)" />
@@ -465,20 +547,30 @@ export const SwipeableCard = ({
           <Tooltip label="Share" position="left">
             <motion.div
               whileTap={{ scale: 1.1 }}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ 
+                scale: 1.05,
+                boxShadow: '0 0 12px rgba(148, 163, 184, 0.3)'
+              }}
               transition={{ duration: 0.15 }}
             >
               <ActionIcon
                 size={40}
                 radius="md"
                 onClick={handleShareClick}
+                disabled={isLoading}
                 style={{
                   background: 'rgba(148, 163, 184, 0.15)',
                   border: '1px solid rgba(148, 163, 184, 0.25)',
                   transition: 'all 0.2s ease',
+                  cursor: isLoading ? 'not-allowed' : 'pointer',
+                  opacity: isLoading ? 0.7 : 1,
                 }}
               >
-                <IconShare size={18} color="var(--color-secondary-accent)" />
+                {isLoading ? (
+                  <Loader size="xs" color="var(--color-secondary-accent)" />
+                ) : (
+                  <IconShare size={18} color="var(--color-secondary-accent)" />
+                )}
               </ActionIcon>
             </motion.div>
           </Tooltip>
@@ -487,7 +579,10 @@ export const SwipeableCard = ({
           <Tooltip label="View PDF" position="left">
             <motion.div
               whileTap={{ scale: 1.1 }}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ 
+                scale: 1.05,
+                boxShadow: '0 0 12px rgba(148, 163, 184, 0.3)'
+              }}
               transition={{ duration: 0.15 }}
             >
               <ActionIcon
@@ -498,6 +593,7 @@ export const SwipeableCard = ({
                   background: 'rgba(148, 163, 184, 0.15)',
                   border: '1px solid rgba(148, 163, 184, 0.25)',
                   transition: 'all 0.2s ease',
+                  cursor: 'pointer',
                 }}
               >
                 <IconFileText size={18} color="var(--color-secondary-accent)" />
@@ -505,6 +601,76 @@ export const SwipeableCard = ({
             </motion.div>
           </Tooltip>
         </Box>
+
+        {/* Action Feedback Toast */}
+        <AnimatePresence>
+          {actionFeedback && (
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.9 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                zIndex: 10,
+                background: actionFeedback.type === 'success' 
+                  ? 'rgba(112, 224, 167, 0.95)' 
+                  : 'rgba(239, 68, 68, 0.95)',
+                color: 'white',
+                padding: '8px 16px',
+                borderRadius: '8px',
+                fontSize: '12px',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                backdropFilter: 'blur(10px)',
+                border: `1px solid ${actionFeedback.type === 'success' 
+                  ? 'rgba(112, 224, 167, 0.3)' 
+                  : 'rgba(239, 68, 68, 0.3)'}`,
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+              }}
+            >
+              {actionFeedback.type === 'success' ? (
+                <IconCheck size={14} />
+              ) : (
+                <IconX size={14} />
+              )}
+              {actionFeedback.message}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Loading Overlay */}
+        <AnimatePresence>
+          {isLoading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'rgba(0, 0, 0, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 5,
+                borderRadius: '16px',
+                backdropFilter: 'blur(2px)',
+              }}
+            >
+              <Loader size="sm" color="var(--color-primary-accent)" />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </Box>
     </motion.div>
   );

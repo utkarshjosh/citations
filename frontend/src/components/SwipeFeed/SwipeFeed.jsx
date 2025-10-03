@@ -177,55 +177,6 @@ export const SwipeFeed = ({
         overflow: 'hidden',
       }}
     >
-      {/* Progress indicator */}
-      <Box
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: '4px',
-          background: 'rgba(255, 255, 255, 0.1)',
-          zIndex: 100,
-        }}
-      >
-        <Box
-          style={{
-            height: '100%',
-            background: 'var(--color-primary-accent)',
-            width: `${((currentIndex + 1) / papers.length) * 100}%`,
-            transition: 'width 0.3s ease',
-          }}
-        />
-      </Box>
-
-      {/* Paper counter */}
-      <Box
-        style={{
-          position: 'fixed',
-          top: '20px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 100,
-          background: 'rgba(0, 0, 0, 0.5)',
-          backdropFilter: 'blur(10px)',
-          padding: '8px 16px',
-          borderRadius: '20px',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-        }}
-      >
-        <Text
-          style={{
-            fontFamily: 'var(--font-family-headline)',
-            fontSize: 'var(--font-size-sm)',
-            fontWeight: 'var(--font-weight-semibold)',
-            color: 'var(--color-text)',
-          }}
-        >
-          {currentIndex + 1} / {papers.length}
-        </Text>
-      </Box>
-
       {/* Continuous scroll container */}
       <Box
         ref={containerRef}
