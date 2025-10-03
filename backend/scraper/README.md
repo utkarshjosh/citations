@@ -1,220 +1,224 @@
-# Brain Scroll - arXiv Scraper
+# arXiv Paper Scraper
 
-Python-based scraper for fetching and storing CS research papers from arXiv.
+A clean, organized arXiv paper scraper that fetches, processes, and stores research papers using LangGraph workflows.
 
-## Features
+## Overview
 
-- Fetches papers from multiple CS categories (AI, ML, NLP, CV, etc.)
-- Rate limiting to respect arXiv API guidelines (3 requests/second)
-- Automatic deduplication based on arXiv ID
-- Robust error handling and retry logic
-- MongoDB storage with optimized indexes
-- Comprehensive logging
+This scraper consists of three main components:
 
-## Setup
+1. **Paper Fetcher** - Fetches papers from arXiv for configured categories
+2. **Paper Processor** - Processes papers through LangGraph workflow to generate summaries and insights
+3. **Pipeline Runner** - Orchestrates the complete fetch -> process -> store pipeline
 
-### Prerequisites
+## Directory Structure
 
-- Python 3.11+
-- MongoDB (local or MongoDB Atlas)
+```
+scraper/
+├── logs/                          # Log files and output data
+├── fetch_papers.py               # Script to fetch papers from arXiv
+├── process_papers.py             # Script to process papers through LangGraph
+├── run_pipeline.py               # Complete pipeline runner
+├── main.py                       # Main entry point
+├── config.py                     # Configuration settings
+├── agentic_paper_fetcher.py      # Paper fetching logic
+├── paper_processing_workflow.py  # LangGraph workflow for processing
+├── db_connection.py              # MongoDB connection
+├── deduplication.py              # Paper deduplication logic
+├── arxiv_client.py               # arXiv API client
+└── requirements.txt              # Python dependencies
+```
 
-### Installation
+## Quick Start
 
-1. Install dependencies:
+### 1. Setup Environment
+
 ```bash
+# Install dependencies
 pip install -r requirements.txt
+
+# Set environment variables
+export GEMINI_API_KEY="your_gemini_api_key"  # or GROQ_API_KEY
+export MONGODB_URI="mongodb://localhost:27017/brain_scroll"
 ```
 
-2. Configure environment variables:
-```bash
-cp .env.example .env
-# Edit .env with your MongoDB connection string
-```
-
-### Configuration
-
-Edit `.env` file:
+### 2. Run Complete Pipeline
 
 ```bash
-# MongoDB Configuration
-MONGODB_URI=mongodb://localhost:27017/brain_scroll
-MONGODB_DB_NAME=brain_scroll
+# Run the complete pipeline (fetch + process + store)
+python main.py
 
-# Scraper Configuration
-MAX_PAPERS_PER_CATEGORY=50
-DAYS_BACK=1
-
-# Logging
-LOG_LEVEL=INFO
+# Or use the pipeline runner directly
+python run_pipeline.py
 ```
 
-## Usage
-
-### Run Scraper
+### 3. Run Individual Steps
 
 ```bash
-python scraper.py
+# Fetch papers only
+python fetch_papers.py
+
+# Process papers from a file
+python process_papers.py logs/fetched_papers_20250103_120000.json
+
+# Process with custom settings
+python fetch_papers.py --max-papers 100 --days-back 3
 ```
 
-This will:
-1. Connect to MongoDB
-2. Fetch papers from configured CS categories
-3. Deduplicate against existing papers
-4. Store new papers in database
-5. Generate detailed logs
+## Configuration
 
-### Run Tests
+Edit `config.py` to customize:
+
+- **CS_CATEGORIES**: arXiv categories to scrape
+- **MAX_PAPERS_PER_CATEGORY**: Maximum papers per category
+- **DAYS_BACK**: How many days back to look for papers
+- **MONGODB_URI**: MongoDB connection string
+
+## Scripts
+
+### fetch_papers.py
+
+Fetches papers from arXiv for all configured categories.
+
+**Usage:**
 
 ```bash
-python test_scraper.py
+python fetch_papers.py [options]
+
+Options:
+  --categories CATEGORIES    arXiv categories (default: all CS categories)
+  --max-papers N            Max papers per category (default: 50)
+  --days-back N             Days to look back (default: 1)
+  --output FILE             Output JSON file path
 ```
 
-Tests include:
-- Database connection
-- arXiv API client
-- Deduplication logic
-- Full pipeline integration
+**Output:** Saves papers to `logs/fetched_papers_TIMESTAMP.json`
 
-### Custom Scraping
+### process_papers.py
 
-```python
-from scraper import PaperScraper
+Processes fetched papers through LangGraph workflow to generate summaries, insights, and applications.
 
-scraper = PaperScraper()
+**Usage:**
 
-# Custom categories and parameters
-result = scraper.run(
-    categories=["cs.AI", "cs.LG"],
-    max_papers_per_category=100,
-    days_back=7
-)
+```bash
+python process_papers.py INPUT_FILE [options]
 
-print(f"Inserted: {result['total_inserted']} papers")
+Options:
+  --output FILE             Output JSON file path
+  --no-db                   Don't store in MongoDB
+  --no-dedup                Don't skip duplicate papers
+  --single ARXIV_ID         Process a single paper by ID
 ```
 
-## Project Structure
+**Output:** Saves processed papers to `logs/processed_papers_TIMESTAMP.json`
 
+### run_pipeline.py
+
+Runs the complete pipeline: fetch papers -> process papers -> store in database.
+
+**Usage:**
+
+```bash
+python run_pipeline.py [options]
+
+Options:
+  --categories CATEGORIES    arXiv categories
+  --max-papers N            Max papers per category
+  --days-back N             Days to look back
+  --skip-fetch              Skip fetching step
+  --skip-process            Skip processing step
+  --input-file FILE         Use existing file instead of fetching
 ```
-backend/scraper/
-├── __init__.py           # Package initialization
-├── config.py             # Configuration and settings
-├── db_connection.py      # MongoDB connection handler
-├── arxiv_client.py       # arXiv API client wrapper
-├── deduplication.py      # Deduplication logic
-├── scraper.py            # Main orchestration script
-├── test_scraper.py       # Test suite
-├── requirements.txt      # Python dependencies
-├── .env.example          # Environment template
-└── README.md             # This file
-```
 
-## Database Schema
+## LangGraph Workflow
 
-Papers are stored with the following schema:
+The paper processing workflow consists of 5 nodes:
+
+1. **Ingestion** - Validates input data
+2. **Summary Generation** - Creates 3-5 line plain English summary
+3. **Why It Matters** - Explains significance and impact
+4. **Applications** - Identifies practical use cases
+5. **Quality Validation** - Validates all generated content
+
+## Output Format
+
+### Fetched Papers
 
 ```json
 {
-  "arxiv_id": "2401.12345",
-  "title": "Paper Title",
-  "authors": ["Author 1", "Author 2"],
-  "abstract": "Full abstract text...",
-  "arxiv_url": "https://arxiv.org/abs/2401.12345",
-  "pdf_url": "https://arxiv.org/pdf/2401.12345",
-  "category": "cs.AI",
-  "primary_category": "cs.AI",
-  "categories": ["cs.AI", "cs.LG"],
-  "published": "2024-01-15T00:00:00",
-  "updated": "2024-01-15T00:00:00",
-  "created_at": "2025-10-01T12:00:00",
-  "processed_at": null,
-  "summary": null,
-  "why_it_matters": null,
-  "applications": null,
-  "likes_count": 0,
-  "views_count": 0
+  "metadata": {
+    "start_time": "2025-01-03T12:00:00",
+    "categories": ["cs.AI", "cs.LG"],
+    "total_papers": 100
+  },
+  "papers": [
+    {
+      "arxiv_id": "2401.12345",
+      "title": "Paper Title",
+      "authors": ["Author 1", "Author 2"],
+      "abstract": "Paper abstract...",
+      "category": "cs.AI",
+      "published": "2025-01-02T00:00:00Z"
+    }
+  ]
 }
 ```
 
-## CS Categories
+### Processed Papers
 
-Default categories scraped:
-- `cs.AI` - Artificial Intelligence
-- `cs.CL` - Computation and Language (NLP)
-- `cs.LG` - Machine Learning
-- `cs.CV` - Computer Vision
-- `cs.NE` - Neural and Evolutionary Computing
-- `cs.RO` - Robotics
-- `cs.IR` - Information Retrieval
-
-## Scheduling
-
-### Cron Job (Linux/Mac)
-
-Add to crontab for daily execution at 2 AM:
-
-```bash
-crontab -e
+```json
+{
+  "metadata": {
+    "total_papers": 100,
+    "papers_processed": 95,
+    "papers_stored": 90
+  },
+  "papers": [
+    {
+      "arxiv_id": "2401.12345",
+      "title": "Paper Title",
+      "summary": "This paper presents...",
+      "why_it_matters": "This research is significant because...",
+      "applications": ["Application 1", "Application 2"],
+      "processed": true
+    }
+  ]
+}
 ```
 
-Add line:
-```
-0 2 * * * cd /path/to/brain-scroll/backend/scraper && /usr/bin/python3 scraper.py >> /var/log/brain-scroll-scraper.log 2>&1
-```
+## Logs
 
-### Task Scheduler (Windows)
+All logs are saved to the `logs/` directory:
 
-Create a scheduled task to run `scraper.py` daily.
-
-## Logging
-
-Logs are written to:
-- Console (stdout)
-- File: `scraper_YYYYMMDD_HHMMSS.log`
-
-Log levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
+- `fetch_papers.log` - Paper fetching logs
+- `process_papers.log` - Paper processing logs
+- `pipeline.log` - Complete pipeline logs
+- `fetched_papers_*.json` - Fetched paper data
+- `processed_papers_*.json` - Processed paper data
 
 ## Error Handling
 
-The scraper includes:
-- Exponential backoff for API retries
-- Connection pooling for MongoDB
-- Graceful handling of duplicates
-- Comprehensive error logging
-- Health checks before processing
+- Failed papers are logged with error details
+- Processing continues even if individual papers fail
+- Statistics are provided for success/failure rates
+- Duplicate papers are automatically skipped
 
-## Performance
+## Dependencies
 
-- Rate limited to 3 requests/second (arXiv guideline)
-- Bulk insert operations for efficiency
-- Database indexes on frequently queried fields
-- Connection pooling for optimal performance
+- `paper-search-mcp` - arXiv paper search
+- `langgraph` - Workflow orchestration
+- `langchain-google-genai` - Gemini LLM integration
+- `langchain-groq` - Groq LLM integration
+- `pymongo` - MongoDB connection
+- `python-dotenv` - Environment variable loading
 
-## Troubleshooting
+## Environment Variables
 
-### MongoDB Connection Issues
-```bash
-# Check MongoDB is running
-mongosh
+Required:
 
-# Verify connection string in .env
-```
+- `GEMINI_API_KEY` or `GROQ_API_KEY` - LLM API key
 
-### arXiv API Errors
-- Respect rate limits (3 req/sec)
-- Check network connectivity
-- Verify category names are valid
+Optional:
 
-### No Papers Fetched
-- Adjust `DAYS_BACK` to look further back
-- Check if papers exist in selected categories
-- Verify date range in logs
-
-## Next Steps
-
-After scraping, papers need LLM processing:
-1. Generate summaries
-2. Extract "why it matters"
-3. Identify applications
-4. Update `processed_at` timestamp
-
-See `../processor/` for LangGraph processing pipeline.
+- `MONGODB_URI` - MongoDB connection string
+- `MONGODB_DB_NAME` - Database name
+- `LOG_LEVEL` - Logging level (INFO, DEBUG, etc.)
