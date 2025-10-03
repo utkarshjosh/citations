@@ -101,7 +101,7 @@ def main():
                 'category': paper['category'],
                 'pdf_url': paper.get('pdf_url'),
                 'arxiv_url': paper.get('arxiv_url'),
-                'published_date': paper.get('published'),
+                'published_date': datetime.fromisoformat(paper.get('published').replace('Z', '+00:00')) if paper.get('published') and isinstance(paper.get('published'), str) else paper.get('published'),
                 'processed': paper.get('processed', False),
                 'processed_at': paper.get('processed_at'),
                 'processing_errors': paper.get('processing_errors', []),

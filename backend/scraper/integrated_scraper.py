@@ -132,6 +132,20 @@ class IntegratedPaperPipeline:
             for paper in processed_papers:
                 try:
                     # Prepare document for MongoDB
+                    # Convert published_date string to Date object if present
+                    published_date = paper.get('published')
+                    if published_date and isinstance(published_date, str):
+                        try:
+                            published_date = datetime.fromisoformat(published_date.replace('Z', '+00:00'))
+                        except (ValueError, AttributeError):
+                            logger.warning(f"Invalid published_date format for {paper['arxiv_id']}: {published_date}")
+                            published_date = None
+                    elif published_date and isinstance(published_date, datetime):
+                        # Already a datetime object, keep as is
+                        pass
+                    else:
+                        published_date = None
+                    
                     paper_doc = {
                         'arxiv_id': paper['arxiv_id'],
                         'title': paper['title'],
@@ -143,7 +157,7 @@ class IntegratedPaperPipeline:
                         'category': paper['category'],
                         'pdf_url': paper.get('pdf_url'),
                         'arxiv_url': paper.get('arxiv_url'),
-                        'published_date': paper.get('published'),
+                        'published_date': published_date,
                         'processed': paper.get('processed', False),
                         'processed_at': paper.get('processed_at'),
                         'processing_errors': paper.get('processing_errors', []),
@@ -223,6 +237,20 @@ class IntegratedPaperPipeline:
             processed_paper = self.workflow.process_paper(paper)
             
             # Store in database
+            # Convert published_date string to Date object if present
+            published_date = processed_paper.get('published')
+            if published_date and isinstance(published_date, str):
+                try:
+                    published_date = datetime.fromisoformat(published_date.replace('Z', '+00:00'))
+                except (ValueError, AttributeError):
+                    logger.warning(f"Invalid published_date format for {processed_paper['arxiv_id']}: {published_date}")
+                    published_date = None
+            elif published_date and isinstance(published_date, datetime):
+                # Already a datetime object, keep as is
+                pass
+            else:
+                published_date = None
+            
             paper_doc = {
                 'arxiv_id': processed_paper['arxiv_id'],
                 'title': processed_paper['title'],
@@ -234,7 +262,7 @@ class IntegratedPaperPipeline:
                 'category': processed_paper['category'],
                 'pdf_url': processed_paper.get('pdf_url'),
                 'arxiv_url': processed_paper.get('arxiv_url'),
-                'published_date': processed_paper.get('published'),
+                'published_date': published_date,
                 'processed': processed_paper.get('processed', False),
                 'processed_at': processed_paper.get('processed_at'),
                 'processing_errors': processed_paper.get('processing_errors', []),
