@@ -11,10 +11,8 @@ from typing import List, Dict, Optional
 from pathlib import Path
 import google.generativeai as genai
 
-# Add the paper-search-mcp submodule to Python path
-submodule_path = Path(__file__).parent.parent / "backend" / "backend" / "paper-search-mcp"
-if str(submodule_path) not in sys.path:
-    sys.path.insert(0, str(submodule_path))
+
+# paper-search-mcp is now installed as a package via uv
 
 from config import (
     CS_CATEGORIES,
@@ -31,7 +29,8 @@ class AgenticPaperFetcher:
     """
     
     def __init__(self):
-        """Initialize the agentic paper fetcher with Gemini"""
+        """Initialize the uv add paper-search-mcp
+agentic paper fetcher with Gemini"""
         # Get API key from environment
         gemini_api_key = os.getenv("GEMINI_API_KEY")
         groq_api_key = os.getenv("GROQ_API_KEY")
@@ -50,8 +49,7 @@ class AgenticPaperFetcher:
             self.llm_provider = "groq"
             logger.info("Initialized with Groq API")
         
-        self.mcp_server_path = Path(__file__).parent.parent / "paper-search-mcp"
-        logger.info(f"MCP server path: {self.mcp_server_path}")
+        # paper-search-mcp is now installed as a package
     
     def _build_search_query(self, category: str) -> str:
         """
