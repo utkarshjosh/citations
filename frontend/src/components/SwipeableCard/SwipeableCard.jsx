@@ -24,7 +24,6 @@ import {
   IconChevronUp,
   IconBulb,
   IconRocket,
-  IconFileText,
   IconCheck,
   IconX,
 } from '@tabler/icons-react';
@@ -141,19 +140,6 @@ export const SwipeableCard = ({
     }
   };
 
-  const handleSourcePDFClick = e => {
-    e.stopPropagation();
-    triggerHapticFeedback(75);
-
-    // Open the PDF URL in a new tab
-    if (url || arxiv_url) {
-      window.open(url || arxiv_url, '_blank', 'noopener,noreferrer');
-      showActionFeedback('success', 'PDF opened in new tab');
-    } else {
-      showActionFeedback('error', 'PDF not available');
-    }
-  };
-
   const toggleExpanded = e => {
     e.stopPropagation();
     triggerHapticFeedback(25);
@@ -190,15 +176,15 @@ export const SwipeableCard = ({
         style={{
           width: '100%',
           height: '100%',
-          background: '#1C212B', // Secondary Base color for distinct cards
+          background: 'var(--color-surface)', // Use theme-aware surface color
           borderRadius: '16px',
           padding: '16px',
           display: 'flex',
           flexDirection: 'column',
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.3)', // Enhanced shadow for depth
-          border: '1px solid rgba(148, 163, 184, 0.15)', // Slightly more visible border
+          boxShadow: 'var(--shadow-lg)', // Use theme-aware shadow
+          border: '1px solid var(--color-border)', // Use theme-aware border
           backdropFilter: 'blur(10px)', // Subtle blur effect for modern look
         }}
       >
@@ -217,7 +203,7 @@ export const SwipeableCard = ({
           }}
         />
 
-        {/* Subtle inner glow for depth */}
+        {/* Subtle inner glow for depth - theme-aware */}
         <Box
           style={{
             position: 'absolute',
@@ -225,8 +211,9 @@ export const SwipeableCard = ({
             left: '1px',
             right: '1px',
             bottom: '1px',
-            background:
-              'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)',
+            background: `linear-gradient(135deg, 
+              rgba(255, 255, 255, 0.05) 0%, 
+              rgba(255, 255, 255, 0.02) 100%)`,
             borderRadius: '15px',
             pointerEvents: 'none',
           }}
@@ -241,7 +228,7 @@ export const SwipeableCard = ({
             height: '100%',
             overflow: 'hidden', // Prevent content from overflowing
             color: 'var(--color-secondary-accent)', // Secondary Accent color
-            paddingRight: '80px', // Reserve space for action buttons on the right
+            paddingRight: '56px', // Space for minimal action buttons with margin
             paddingBottom: '80px', // Reserve space for authors at bottom
             display: 'flex',
             flexDirection: 'column',
@@ -264,8 +251,8 @@ export const SwipeableCard = ({
               variant="subtle"
               size="xs"
               component="a"
-              href={url}
-              target={arxiv_url}
+              href={arxiv_url || url}
+              target="_blank"
               rel="noopener noreferrer"
               style={{
                 color: 'var(--color-primary-accent)', // Primary Accent
@@ -308,7 +295,7 @@ export const SwipeableCard = ({
                 marginBottom: 'var(--spacing-sm)',
                 transition: 'flex 0.3s ease',
                 minHeight: expanded ? '0px' : '100px', // Minimum height when collapsed
-                maxHeight: expanded ? '60px' : 'none', // Limit height when expanded
+                maxHeight: expanded ? '40px' : 'none', // Limit height when expanded to give more space to applications
               }}
             >
               <Text
@@ -366,8 +353,9 @@ export const SwipeableCard = ({
                         background: 'rgba(0, 208, 255, 0.05)',
                         borderRadius: '8px',
                         border: '1px solid rgba(0, 208, 255, 0.1)',
-                        maxHeight: '300px',
+                        maxHeight: '400px', // Increased from 300px to give more space
                         overflow: 'auto',
+                        flex: 1, // Take available space
                       }}
                     >
                       <Text
@@ -435,21 +423,21 @@ export const SwipeableCard = ({
               position: 'absolute',
               bottom: '16px', // Position within the card
               left: '16px',
-              right: '96px', // Leave space for action buttons
+              right: '68px', // Space for minimal action buttons with margin
               zIndex: 2,
             }}
           >
             <Text
               size="xs"
               style={{
-                color: 'var(--color-secondary-accent)',
+                color: 'var(--color-text-secondary)',
                 fontFamily: 'var(--font-family-mono)',
                 fontSize: 'var(--font-size-xs)',
                 padding: '8px 12px',
                 background: 'rgba(0, 0, 0, 0.7)',
                 borderRadius: '6px',
                 backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(148, 163, 184, 0.1)',
+                border: '1px solid var(--color-border)',
                 maxHeight: '40px',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -467,184 +455,137 @@ export const SwipeableCard = ({
           </Box>
         )}
 
-        {/* Action buttons - Enhanced design with new buttons */}
+        {/* Minimal action buttons - High-density minimalism */}
         <Box
           style={{
             position: 'absolute',
-            right: '16px',
-            top: '50%',
+            right: '20px',
+            top: '60%',
             transform: 'translateY(-50%)',
             display: 'flex',
             flexDirection: 'column',
-            gap: '8px',
+            gap: '12px',
             zIndex: 2,
-            maxHeight: '80vh', // Limit to viewport height
-            overflow: 'hidden',
+            opacity: 0.8, // Subtle presence
+            transition: 'opacity 0.2s ease',
           }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '0.8')}
         >
-          {/* Like button */}
+          {/* Like button - Minimal icon only */}
           <Tooltip label={localLiked ? 'Unlike' : 'Like'} position="left">
-            <Box style={{ textAlign: 'center', height: '52px' }}>
-              <motion.div
-                whileTap={{ scale: 1.1 }}
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow: localLiked
-                    ? '0 0 20px rgba(0, 208, 255, 0.6)'
-                    : '0 0 12px rgba(148, 163, 184, 0.3)',
-                }}
-                transition={{ duration: 0.15 }}
-              >
-                <ActionIcon
-                  size={40}
-                  radius="md"
-                  onClick={handleLikeClick}
-                  disabled={isLoading}
-                  style={{
-                    background: localLiked
-                      ? 'var(--color-primary-accent)'
-                      : 'rgba(148, 163, 184, 0.15)',
-                    border: `1px solid ${localLiked ? 'var(--color-primary-accent)' : 'rgba(148, 163, 184, 0.25)'}`,
-                    transition: 'all 0.2s ease',
-                    boxShadow: localLiked ? '0 0 12px rgba(0, 208, 255, 0.4)' : 'none',
-                    cursor: isLoading ? 'not-allowed' : 'pointer',
-                    opacity: isLoading ? 0.7 : 1,
-                  }}
-                >
-                  {isLoading ? (
-                    <Loader
-                      size="xs"
-                      color={localLiked ? 'white' : 'var(--color-secondary-accent)'}
-                    />
-                  ) : localLiked ? (
-                    <IconHeartFilled size={18} color="white" />
-                  ) : (
-                    <IconHeart size={18} color="var(--color-secondary-accent)" />
-                  )}
-                </ActionIcon>
-              </motion.div>
-              <Text
-                size="xs"
-                fw={600}
-                mt={2}
+            <motion.div
+              whileTap={{ scale: 1.2 }}
+              whileHover={{ scale: 1.1 }}
+              transition={{ duration: 0.15 }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+            >
+              <Box
+                onClick={handleLikeClick}
+                disabled={isLoading}
                 style={{
-                  color:
-                    localLikesCount > 0
-                      ? localLiked
-                        ? 'var(--color-primary-accent)'
-                        : 'var(--color-secondary-accent)'
-                      : 'transparent',
-                  fontFamily: 'var(--font-family-mono)',
-                  fontSize: '10px',
-                  transition: 'color 0.2s ease',
-                  height: '12px', // Reserve space for text
+                  cursor: isLoading ? 'not-allowed' : 'pointer',
+                  opacity: isLoading ? 0.5 : 1,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                }}
-              >
-                {localLikesCount > 0 ? localLikesCount : '0'}
-              </Text>
-            </Box>
-          </Tooltip>
-
-          {/* Bookmark button */}
-          <Tooltip label={localSaved ? 'Remove bookmark' : 'Bookmark'} position="left">
-            <motion.div
-              whileTap={{ scale: 1.1 }}
-              whileHover={{
-                scale: 1.05,
-                boxShadow: localSaved
-                  ? '0 0 20px rgba(112, 224, 167, 0.6)'
-                  : '0 0 12px rgba(148, 163, 184, 0.3)',
-              }}
-              transition={{ duration: 0.15 }}
-            >
-              <ActionIcon
-                size={40}
-                radius="md"
-                onClick={handleSaveClick}
-                disabled={isLoading}
-                style={{
-                  background: localSaved
-                    ? 'var(--color-success-trend)'
-                    : 'rgba(148, 163, 184, 0.15)',
-                  border: `1px solid ${localSaved ? 'var(--color-success-trend)' : 'rgba(148, 163, 184, 0.25)'}`,
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  background: 'transparent',
                   transition: 'all 0.2s ease',
-                  boxShadow: localSaved ? '0 0 12px rgba(112, 224, 167, 0.4)' : 'none',
-                  cursor: isLoading ? 'not-allowed' : 'pointer',
-                  opacity: isLoading ? 0.7 : 1,
                 }}
               >
                 {isLoading ? (
-                  <Loader
-                    size="xs"
-                    color={localSaved ? 'white' : 'var(--color-secondary-accent)'}
-                  />
-                ) : localSaved ? (
-                  <IconBookmarkFilled size={18} color="white" />
+                  <Loader size="xs" color="var(--color-secondary-accent)" />
+                ) : localLiked ? (
+                  <IconHeartFilled size={16} color="var(--color-primary-accent)" />
                 ) : (
-                  <IconBookmark size={18} color="var(--color-secondary-accent)" />
+                  <IconHeart size={16} color="var(--color-secondary-accent)" />
                 )}
-              </ActionIcon>
+              </Box>
+              {localLikesCount > 0 && (
+                <Text
+                  size="xs"
+                  style={{
+                    color: localLiked
+                      ? 'var(--color-primary-accent)'
+                      : 'var(--color-secondary-accent)',
+                    fontFamily: 'var(--font-family-mono)',
+                    fontSize: '9px',
+                    lineHeight: 1,
+                    marginTop: '2px',
+                  }}
+                >
+                  {localLikesCount}
+                </Text>
+              )}
             </motion.div>
           </Tooltip>
 
-          {/* Share button */}
-          <Tooltip label="Share" position="left">
+          {/* Bookmark button - Minimal icon only */}
+          <Tooltip label={localSaved ? 'Remove bookmark' : 'Bookmark'} position="left">
             <motion.div
-              whileTap={{ scale: 1.1 }}
-              whileHover={{
-                scale: 1.05,
-                boxShadow: '0 0 12px rgba(148, 163, 184, 0.3)',
-              }}
+              whileTap={{ scale: 1.2 }}
+              whileHover={{ scale: 1.1 }}
               transition={{ duration: 0.15 }}
             >
-              <ActionIcon
-                size={40}
-                radius="md"
+              <Box
+                onClick={handleSaveClick}
+                disabled={isLoading}
+                style={{
+                  cursor: isLoading ? 'not-allowed' : 'pointer',
+                  opacity: isLoading ? 0.5 : 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  background: 'transparent',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                {isLoading ? (
+                  <Loader size="xs" color="var(--color-secondary-accent)" />
+                ) : localSaved ? (
+                  <IconBookmarkFilled size={16} color="var(--color-success-trend)" />
+                ) : (
+                  <IconBookmark size={16} color="var(--color-secondary-accent)" />
+                )}
+              </Box>
+            </motion.div>
+          </Tooltip>
+
+          {/* Share button - Minimal icon only */}
+          <Tooltip label="Share" position="left">
+            <motion.div
+              whileTap={{ scale: 1.2 }}
+              whileHover={{ scale: 1.1 }}
+              transition={{ duration: 0.15 }}
+            >
+              <Box
                 onClick={handleShareClick}
                 disabled={isLoading}
                 style={{
-                  background: 'rgba(148, 163, 184, 0.15)',
-                  border: '1px solid rgba(148, 163, 184, 0.25)',
-                  transition: 'all 0.2s ease',
                   cursor: isLoading ? 'not-allowed' : 'pointer',
-                  opacity: isLoading ? 0.7 : 1,
+                  opacity: isLoading ? 0.5 : 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  background: 'transparent',
+                  transition: 'all 0.2s ease',
                 }}
               >
                 {isLoading ? (
                   <Loader size="xs" color="var(--color-secondary-accent)" />
                 ) : (
-                  <IconShare size={18} color="var(--color-secondary-accent)" />
+                  <IconShare size={16} color="var(--color-secondary-accent)" />
                 )}
-              </ActionIcon>
-            </motion.div>
-          </Tooltip>
-
-          {/* Source PDF button */}
-          <Tooltip label="View PDF" position="left">
-            <motion.div
-              whileTap={{ scale: 1.1 }}
-              whileHover={{
-                scale: 1.05,
-                boxShadow: '0 0 12px rgba(148, 163, 184, 0.3)',
-              }}
-              transition={{ duration: 0.15 }}
-            >
-              <ActionIcon
-                size={40}
-                radius="md"
-                onClick={handleSourcePDFClick}
-                style={{
-                  background: 'rgba(148, 163, 184, 0.15)',
-                  border: '1px solid rgba(148, 163, 184, 0.25)',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer',
-                }}
-              >
-                <IconFileText size={18} color="var(--color-secondary-accent)" />
-              </ActionIcon>
+              </Box>
             </motion.div>
           </Tooltip>
         </Box>

@@ -136,7 +136,7 @@ export const SwipeFeed = ({
 
   if (!papers.length && !isLoading) {
     return (
-      <Center style={{ height: '100vh', background: 'var(--color-primary-base)' }}>
+      <Center style={{ height: '100vh', background: 'var(--color-background)' }}>
         <Stack align="center" gap="md">
           <Text
             style={{
@@ -173,7 +173,7 @@ export const SwipeFeed = ({
         bottom: 0,
         width: '100vw',
         height: '100vh',
-        background: '#0E1117', // Primary Base color for distinct contrast
+        background: 'var(--color-background)', // Theme-aware background
         overflow: 'hidden',
       }}
     >
@@ -277,7 +277,7 @@ export const SwipeFeed = ({
                 backdropFilter: 'blur(10px)',
                 padding: '20px 32px',
                 borderRadius: '24px',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
+                border: '1px solid var(--color-border)',
               }}
             >
               <Text size="lg" c="white" ta="center" fw={600}>

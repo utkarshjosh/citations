@@ -89,7 +89,7 @@ const Landing = () => {
     <Box
       style={{
         minHeight: '100vh',
-        background: '#0a0a0a',
+        background: 'var(--color-background)',
         padding: '2rem 0',
         position: 'relative',
         overflow: 'auto',
@@ -150,7 +150,7 @@ const Landing = () => {
                 animate={{ scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <LogoIcon size={80} color="white" />
+                <LogoIcon size={80} color="var(--color-text)" />
               </motion.div>
             </Center>
 
@@ -185,7 +185,7 @@ const Landing = () => {
 
               <Group gap="lg" mt="md">
                 <Group gap="xs">
-                  <IconSparkles size={20} color="var(--color-primary-accent)" />
+                  <IconSparkles size={20} color="var(--color-accent)" />
                   <Text
                     style={{
                       fontFamily: 'var(--font-family-body)',
@@ -198,7 +198,7 @@ const Landing = () => {
                   </Text>
                 </Group>
                 <Group gap="xs">
-                  <IconRocket size={20} color="var(--color-primary-accent)" />
+                  <IconRocket size={20} color="var(--color-accent)" />
                   <Text
                     style={{
                       fontFamily: 'var(--font-family-body)',
@@ -222,16 +222,17 @@ const Landing = () => {
                 width: '100%',
                 maxWidth: '900px',
                 marginTop: '2rem',
-                background: 'rgba(255, 255, 255, 0.95)',
+                background: 'var(--color-surface)',
                 backdropFilter: 'blur(10px)',
+                border: '1px solid var(--color-border)',
               }}
             >
               <Stack gap="lg">
                 <div>
-                  <Title order={2} size="h3" mb="xs" c="dark">
+                  <Title order={2} size="h3" mb="xs" style={{ color: 'var(--color-text)' }}>
                     Choose Your Interests
                   </Title>
-                  <Text c="dimmed" size="sm">
+                  <Text size="sm" style={{ color: 'var(--color-text-secondary)' }}>
                     Select topics you'd like to explore (or skip to see everything)
                   </Text>
                 </div>
@@ -249,15 +250,13 @@ const Landing = () => {
                             radius="xl"
                             style={{
                               cursor: 'pointer',
-                              background: isSelected
-                                ? category.gradient
-                                : 'rgba(255, 255, 255, 0.05)',
+                              background: isSelected ? category.gradient : 'var(--color-surface)',
                               border: isSelected
-                                ? '2px solid rgba(255, 255, 255, 0.3)'
-                                : '2px solid rgba(255, 255, 255, 0.1)',
+                                ? '2px solid var(--color-accent)'
+                                : '2px solid var(--color-border)',
                               backdropFilter: 'blur(10px)',
                               transition: 'all 0.3s ease',
-                              boxShadow: isSelected ? '0 8px 32px rgba(0, 0, 0, 0.3)' : 'none',
+                              boxShadow: isSelected ? 'var(--shadow-lg)' : 'var(--shadow-sm)',
                             }}
                             onClick={() => toggleCategory(category.id)}
                           >
@@ -273,22 +272,39 @@ const Landing = () => {
                                     backgroundColor: isSelected
                                       ? 'rgba(255, 255, 255, 0.3)'
                                       : 'transparent',
-                                    borderColor: 'rgba(255, 255, 255, 0.5)',
+                                    borderColor: isSelected
+                                      ? 'rgba(255, 255, 255, 0.5)'
+                                      : 'var(--color-border)',
                                   },
                                 }}
                               />
                               <div style={{ flex: 1 }}>
                                 <Group gap="xs" mb="xs">
                                   {category.icon === LogoIcon ? (
-                                    <LogoIcon size={24} color={isSelected ? 'white' : '#333'} />
+                                    <LogoIcon
+                                      size={24}
+                                      color={isSelected ? 'white' : 'var(--color-text)'}
+                                    />
                                   ) : (
-                                    <Icon size={24} color={isSelected ? 'white' : '#333'} />
+                                    <Icon
+                                      size={24}
+                                      color={isSelected ? 'white' : 'var(--color-text)'}
+                                    />
                                   )}
-                                  <Text fw={700} size="md" c={isSelected ? 'white' : 'dark'}>
+                                  <Text
+                                    fw={700}
+                                    size="md"
+                                    style={{ color: isSelected ? 'white' : 'var(--color-text)' }}
+                                  >
                                     {category.name}
                                   </Text>
                                 </Group>
-                                <Text size="sm" c={isSelected ? 'white' : 'dimmed'}>
+                                <Text
+                                  size="sm"
+                                  style={{
+                                    color: isSelected ? 'white' : 'var(--color-text-secondary)',
+                                  }}
+                                >
                                   {category.description}
                                 </Text>
                               </div>
@@ -322,16 +338,12 @@ const Landing = () => {
                   >
                     <Group gap="sm">
                       <IconRocket size={24} />
-                      <Text>
-                        {selectedCategories.length > 0
-                          ? `Start Scrolling (${selectedCategories.length} selected)`
-                          : 'Start Scrolling (All Topics)'}
-                      </Text>
+                      <Text>Start Scrolling</Text>
                     </Group>
                   </Button>
                 </motion.div>
 
-                <Text size="xs" c="dimmed" ta="center" style={{ color: '#666' }}>
+                <Text size="xs" ta="center" style={{ color: 'var(--color-text-secondary)' }}>
                   No signup required • Free forever • Updated daily
                 </Text>
               </Stack>

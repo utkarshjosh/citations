@@ -58,11 +58,14 @@ export const colors = {
     900: '#14532d',
   },
 
-  // Minimal gradients for subtle effects
+  // Vibrant gradients for Citations brand
   gradients: {
-    primary: 'linear-gradient(135deg, #00D0FF 0%, #0E1117 100%)',
-    card: 'linear-gradient(135deg, #1C212B 0%, #0E1117 100%)',
-    subtle: 'linear-gradient(135deg, #94A3B8 0%, #00D0FF 100%)',
+    primary: 'linear-gradient(135deg, #00D0FF 0%, #70E0A7 100%)',
+    card: 'linear-gradient(135deg, #1C212B 0%, rgba(0, 208, 255, 0.05) 100%)',
+    subtle: 'linear-gradient(135deg, #00D0FF 0%, rgba(112, 224, 167, 0.3) 100%)',
+    whyItMatters:
+      'linear-gradient(135deg, rgba(0, 208, 255, 0.08) 0%, rgba(112, 224, 167, 0.05) 100%)',
+    hover: 'linear-gradient(135deg, rgba(0, 208, 255, 0.1) 0%, rgba(112, 224, 167, 0.08) 100%)',
   },
 
   // Dark mode optimized for Citations
@@ -76,6 +79,19 @@ export const colors = {
     textTertiary: '#64748b',
     accent: '#00D0FF', // Primary accent
     success: '#70E0A7', // Success/trend
+  },
+
+  // Light mode for Citations
+  light: {
+    bg: '#ffffff', // Clean white background
+    surface: '#f8fafc', // Light gray surface
+    surfaceHover: '#f1f5f9',
+    border: '#e2e8f0',
+    text: '#0f172a', // Dark text
+    textSecondary: '#475569', // Medium gray text
+    textTertiary: '#64748b',
+    accent: '#00D0FF', // Same vibrant accent
+    success: '#70E0A7', // Same success color
   },
 };
 

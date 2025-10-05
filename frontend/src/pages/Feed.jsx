@@ -96,7 +96,7 @@ const Feed = () => {
   // Initial loading state
   if (isLoading) {
     return (
-      <Center style={{ height: '100vh', background: 'var(--color-primary-base)' }}>
+      <Center style={{ height: '100vh', background: 'var(--color-background)' }}>
         <Stack gap="md" align="center">
           <Loader size="xl" color="var(--color-primary-accent)" />
           <Text
@@ -127,7 +127,7 @@ const Feed = () => {
   // Error state
   if (isError) {
     return (
-      <Center style={{ height: '100vh', background: '#0a0a0a', padding: '20px' }}>
+      <Center style={{ height: '100vh', background: 'var(--color-background)', padding: '20px' }}>
         <ErrorMessage
           title="Failed to load papers"
           message={error?.message || 'Something went wrong. Please try again later.'}

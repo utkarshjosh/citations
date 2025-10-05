@@ -107,6 +107,18 @@
   --z-tooltip: 1070;
 }
 
+/* Default dark mode (Citations primary theme) */
+:root {
+  --color-background: var(--color-primary-base);
+  --color-surface: var(--color-secondary-base);
+  --color-text: #ffffff;
+  --color-text-secondary: var(--color-secondary-accent);
+  --color-text-tertiary: var(--color-secondary-500);
+  --color-border: var(--color-secondary-700);
+  --color-accent: var(--color-primary-accent);
+  --color-success: var(--color-success-trend);
+}
+
 /* Dark mode optimizations */
 @media (prefers-color-scheme: dark) {
   :root {
@@ -121,32 +133,67 @@
   }
 }
 
-/* Light mode (if needed in future) */
+/* Light mode - vibrant and clean */
 @media (prefers-color-scheme: light) {
   :root {
     --color-background: #ffffff;
-    --color-surface: #f8f9fa;
-    --color-text: #212529;
-    --color-text-secondary: #6c757d;
-    --color-text-tertiary: #adb5bd;
-    --color-border: #e9ecef;
+    --color-surface: #f8fafc;
+    --color-text: #0f172a;
+    --color-text-secondary: #475569;
+    --color-text-tertiary: #64748b;
+    --color-border: #e2e8f0;
     --color-accent: var(--color-primary-accent);
     --color-success: var(--color-success-trend);
+
+    /* Override base colors for light mode */
+    --color-primary-base: #ffffff;
+    --color-secondary-base: #f8fafc;
+    --color-secondary-accent: #475569;
+
+    /* Light mode specific shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-glow: 0 0 20px rgba(0, 208, 255, 0.2); /* Lighter glow for light mode */
   }
 }
 
 /* Utility classes for Citations design system */
 .citations-card {
-  background-color: var(--color-secondary-base);
+  background: linear-gradient(135deg, var(--color-surface) 0%, rgba(0, 208, 255, 0.05) 100%);
+  border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-lg);
   box-shadow: var(--shadow-md);
   transition: var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.citations-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary-accent) 0%,
+    var(--color-success-trend) 100%
+  );
+  opacity: 0;
+  transition: var(--transition-fast);
 }
 
 .citations-card:hover {
   box-shadow: var(--shadow-glow);
   transform: translateY(-2px);
+  border-color: var(--color-accent);
+}
+
+.citations-card:hover::before {
+  opacity: 1;
 }
 
 .citations-text-primary {
@@ -174,8 +221,8 @@
 }
 
 .citations-button-primary {
-  background-color: var(--color-primary-accent);
-  color: var(--color-primary-base);
+  background-color: var(--color-accent);
+  color: var(--color-background);
   border: none;
   border-radius: var(--border-radius-md);
   padding: var(--spacing-sm) var(--spacing-md);
@@ -192,8 +239,8 @@
 
 .citations-button-secondary {
   background-color: transparent;
-  color: var(--color-secondary-accent);
-  border: 1px solid var(--color-secondary-accent);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
   border-radius: var(--border-radius-md);
   padding: var(--spacing-sm) var(--spacing-md);
   font-family: var(--font-family-headline);
@@ -203,7 +250,7 @@
 }
 
 .citations-button-secondary:hover {
-  background-color: var(--color-primary-accent);
-  color: var(--color-primary-base);
-  border-color: var(--color-primary-accent);
+  background-color: var(--color-accent);
+  color: var(--color-background);
+  border-color: var(--color-accent);
 }

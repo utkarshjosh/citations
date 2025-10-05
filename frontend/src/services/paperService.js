@@ -10,17 +10,15 @@ export const paperService = {
    * @param {Object} params - Query parameters
    * @param {number} params.page - Page number
    * @param {number} params.limit - Items per page
-   * @param {string} params.category - Category filter
    * @returns {Promise} API response
    */
   getFeed: async (params = {}) => {
-    const { page = 1, limit = 20, category } = params;
+    const { page = 1, limit = 20 } = params;
     const queryParams = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
-      ...(category && { category }),
     });
-    
+
     const response = await apiClient.get(`/feed?${queryParams}`);
     return response.data;
   },
@@ -30,7 +28,7 @@ export const paperService = {
    * @param {string} paperId - Paper ID
    * @returns {Promise} API response
    */
-  getPaperById: async (paperId) => {
+  getPaperById: async paperId => {
     const response = await apiClient.get(`/papers/${paperId}`);
     return response.data;
   },
@@ -50,7 +48,7 @@ export const paperService = {
       page: page.toString(),
       limit: limit.toString(),
     });
-    
+
     const response = await apiClient.get(`/papers/search?${queryParams}`);
     return response.data;
   },
@@ -69,7 +67,7 @@ export const paperService = {
    * @param {string} paperId - Paper ID
    * @returns {Promise} API response
    */
-  markAsRead: async (paperId) => {
+  markAsRead: async paperId => {
     const response = await apiClient.post(`/papers/${paperId}/read`);
     return response.data;
   },
@@ -79,7 +77,7 @@ export const paperService = {
    * @param {string} paperId - Paper ID
    * @returns {Promise} API response
    */
-  savePaper: async (paperId) => {
+  savePaper: async paperId => {
     const response = await apiClient.post(`/papers/${paperId}/save`);
     return response.data;
   },
@@ -89,7 +87,7 @@ export const paperService = {
    * @param {string} paperId - Paper ID
    * @returns {Promise} API response
    */
-  unsavePaper: async (paperId) => {
+  unsavePaper: async paperId => {
     const response = await apiClient.delete(`/papers/${paperId}/save`);
     return response.data;
   },
@@ -112,8 +110,8 @@ export const paperService = {
    * @returns {Promise} API response
    */
   unlikePaper: async (paperId, sessionId) => {
-    const response = await apiClient.delete(`/papers/${paperId}/like`, { 
-      data: { sessionId } 
+    const response = await apiClient.delete(`/papers/${paperId}/like`, {
+      data: { sessionId },
     });
     return response.data;
   },
@@ -135,18 +133,16 @@ export const paperService = {
    * @param {number} params.page - Page number
    * @param {number} params.limit - Items per page
    * @param {number} params.timeWindow - Time window in days (1, 7, 30)
-   * @param {string} params.category - Category filter
    * @returns {Promise} API response
    */
   getTrending: async (params = {}) => {
-    const { page = 1, limit = 20, timeWindow = 7, category } = params;
+    const { page = 1, limit = 20, timeWindow = 7 } = params;
     const queryParams = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
       timeWindow: timeWindow.toString(),
-      ...(category && { category }),
     });
-    
+
     const response = await apiClient.get(`/trending?${queryParams}`);
     return response.data;
   },

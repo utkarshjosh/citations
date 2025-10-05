@@ -96,6 +96,7 @@ export const PaperCard = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       padding="md"
+      className="citations-card"
       style={{
         height: '100%',
         display: 'flex',
@@ -137,6 +138,13 @@ export const PaperCard = ({
             rel="noopener noreferrer"
             onClick={handleTitleClick}
             size="sm"
+            styles={{
+              root: {
+                color: 'var(--color-accent)',
+                backgroundColor: 'rgba(0, 208, 255, 0.1)',
+                border: '1px solid var(--color-border)',
+              },
+            }}
           >
             <IconExternalLink size={16} />
           </ActionIcon>
@@ -171,9 +179,17 @@ export const PaperCard = ({
                 root: {
                   paddingLeft: 0,
                   paddingRight: 0,
+                  color: 'var(--color-accent)',
+                  backgroundColor: 'transparent',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: 'var(--border-radius-md)',
                 },
                 inner: {
                   justifyContent: 'space-between',
+                },
+                label: {
+                  color: 'var(--color-accent)',
+                  fontWeight: 'var(--font-weight-semibold)',
                 },
               }}
             >
@@ -190,7 +206,12 @@ export const PaperCard = ({
                 <Stack
                   gap="sm"
                   p="sm"
-                  style={{ backgroundColor: 'var(--mantine-color-gray-0)', borderRadius: '8px' }}
+                  style={{
+                    background:
+                      'linear-gradient(135deg, rgba(0, 208, 255, 0.08) 0%, rgba(112, 224, 167, 0.05) 100%)',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--border-radius-md)',
+                  }}
                 >
                   <Text
                     style={{
@@ -209,8 +230,8 @@ export const PaperCard = ({
                       <Divider />
                       <div>
                         <Group gap="xs" mb="xs">
-                          <IconRocket size={16} />
-                          <Text size="sm" fw={600}>
+                          <IconRocket size={16} style={{ color: 'var(--color-primary-accent)' }} />
+                          <Text size="sm" fw={600} style={{ color: 'var(--color-primary-accent)' }}>
                             Applications
                           </Text>
                         </Group>
@@ -233,7 +254,18 @@ export const PaperCard = ({
         {/* Metadata */}
         <Group gap="xs" mt="auto">
           {category && (
-            <Badge variant="light" size="sm">
+            <Badge
+              variant="light"
+              size="sm"
+              styles={{
+                root: {
+                  backgroundColor: 'rgba(0, 208, 255, 0.1)',
+                  color: 'var(--color-accent)',
+                  border: '1px solid var(--color-border)',
+                  fontWeight: 'var(--font-weight-medium)',
+                },
+              }}
+            >
               {category}
             </Badge>
           )}
@@ -257,7 +289,7 @@ export const PaperCard = ({
           justify="space-between"
           mt="xs"
           pt="xs"
-          style={{ borderTop: '1px solid var(--mantine-color-gray-2)' }}
+          style={{ borderTop: '1px solid var(--color-border)' }}
         >
           <Group gap="xs">
             <Tooltip label={localLiked ? 'Unlike' : 'Like'}>
@@ -266,6 +298,13 @@ export const PaperCard = ({
                 color={localLiked ? 'red' : 'gray'}
                 onClick={handleLikeClick}
                 size="lg"
+                styles={{
+                  root: {
+                    color: localLiked ? 'var(--color-success)' : 'var(--color-text-secondary)',
+                    backgroundColor: localLiked ? 'rgba(112, 224, 167, 0.1)' : 'transparent',
+                    border: `1px solid ${localLiked ? 'var(--color-border)' : 'transparent'}`,
+                  },
+                }}
               >
                 <motion.div
                   whileTap={{ scale: 1.3 }}
@@ -276,7 +315,7 @@ export const PaperCard = ({
               </ActionIcon>
             </Tooltip>
             {localLikesCount > 0 && (
-              <Text size="sm" c="dimmed">
+              <Text size="sm" style={{ color: 'var(--color-text-secondary)' }}>
                 {localLikesCount}
               </Text>
             )}
@@ -289,13 +328,31 @@ export const PaperCard = ({
                 color={isSaved ? 'blue' : 'gray'}
                 onClick={handleSaveClick}
                 size="lg"
+                styles={{
+                  root: {
+                    color: isSaved ? 'var(--color-accent)' : 'var(--color-text-secondary)',
+                    backgroundColor: isSaved ? 'rgba(0, 208, 255, 0.1)' : 'transparent',
+                    border: `1px solid ${isSaved ? 'var(--color-border)' : 'transparent'}`,
+                  },
+                }}
               >
                 {isSaved ? <IconBookmarkFilled size={20} /> : <IconBookmark size={20} />}
               </ActionIcon>
             </Tooltip>
 
             <Tooltip label="Share">
-              <ActionIcon variant="subtle" color="gray" onClick={handleShareClick} size="lg">
+              <ActionIcon
+                variant="subtle"
+                color="gray"
+                onClick={handleShareClick}
+                size="lg"
+                styles={{
+                  root: {
+                    color: 'var(--color-text-secondary)',
+                    backgroundColor: 'transparent',
+                  },
+                }}
+              >
                 <IconShare size={20} />
               </ActionIcon>
             </Tooltip>
